@@ -1,0 +1,31 @@
+{
+  "name": "vault-chat",
+  "private": true,
+  "packageManager": "pnpm@10.28.2",
+  "scripts": {
+    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "dev:all": "node scripts/local.mjs start",
+    "dev:stop": "node scripts/local.mjs stop",
+    "dev:reset": "node scripts/local.mjs reset",
+    "certs": "node scripts/local.mjs certs",
+    "build": "pnpm -r build",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r typecheck && tsc -p tsconfig.tooling.json",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "check": "pnpm lint && pnpm typecheck && pnpm test:infra && pnpm test",
+    "prepare": "node scripts/hooks.mjs",
+    "doctor": "node scripts/doctor.mjs",
+    "test:infra": "node --test tests/infra/*.test.mjs",
+    "test:hosted": "playwright test --config playwright.hosted.config.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "typescript-eslint": "^8.48.0",
+    "typescript": "^5.9.3",
+    "@playwright/test": "^1.57.0",
+    "vitest": "^3.2.4",
+    "supabase": "^2.65.0"
+  }
+}

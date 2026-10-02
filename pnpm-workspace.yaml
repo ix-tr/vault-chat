@@ -1,0 +1,10 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Explicitly permit build hooks required for CLI/native tooling.
+onlyBuiltDependencies:
+  - supabase
+  - esbuild
+  - sharp
+  - "@tailwindcss/oxide"

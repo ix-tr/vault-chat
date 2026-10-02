@@ -1,0 +1,11 @@
+# Netlify UI: package directory apps/web; leave base directory unset.
+# Installation/build commands run from the repository root.
+[build]
+command = "pnpm check && pnpm --filter @vault/web build"
+publish = "apps/web/.next"
+
+[build.environment]
+NODE_VERSION = "24"
+PNPM_VERSION = "10.28.2"
+PNPM_FLAGS = "--frozen-lockfile"
+NEXT_TELEMETRY_DISABLED = "1"

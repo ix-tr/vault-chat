@@ -1,0 +1,31 @@
+services:
+  gateway:
+    image: caddy:2.10.2-alpine
+    ports:
+      - "${LAN_IP:-127.0.0.1}:8443:8443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./certs:/certs:ro
+    environment:
+      CHAT_HOST: ${CHAT_HOST:-chat.localhost}
+      ADMIN_HOST: ${ADMIN_HOST:-admin.localhost}
+  turn:
+    image: coturn/coturn:4.6.3
+    command: ["-c", "/etc/coturn/turnserver.conf"]
+    ports:
+      - "${LAN_IP:-127.0.0.1}:3478:3478/udp"
+      - "${LAN_IP:-127.0.0.1}:3478:3478/tcp"
+      - "${LAN_IP:-127.0.0.1}:${TURN_MIN_PORT:-49160}-${TURN_MAX_PORT:-49200}:${TURN_MIN_PORT:-49160}-${TURN_MAX_PORT:-49200}/udp"
+    volumes:
+      - ./runtime/turnserver.conf:/etc/coturn/turnserver.conf:ro
+  livekit:
+    image: livekit/livekit-server:v1.9.9
+    command: ["--config", "/etc/livekit.yaml"]
+    ports:
+      - "${LAN_IP:-127.0.0.1}:7880:7880"
+      - "${LAN_IP:-127.0.0.1}:7881:7881"
+      - "${LAN_IP:-127.0.0.1}:50000-50100:50000-50100/udp"
+    volumes:
+      - ./runtime/livekit.yaml:/etc/livekit.yaml:ro

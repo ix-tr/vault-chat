@@ -1,0 +1,25 @@
+node_modules/
+.next/
+.env
+.env.*
+!.env.example
+infra/certs/
+infra/runtime/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+supabase/.temp/
+
+.tools/
+
+# Local access credentials and deployment links
+.token
+.token.*
+.vercel/
+
+# Owner-provided Supabase credentials
+/supabasesettings
+
+__pycache__/
+*.pyc

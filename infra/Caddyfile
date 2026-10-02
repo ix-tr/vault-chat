@@ -1,0 +1,12 @@
+{
+ auto_https off
+ admin off
+}
+https://{$CHAT_HOST}:8443 {
+ tls /certs/local.pem /certs/local-key.pem
+ reverse_proxy host.docker.internal:3100
+}
+https://{$ADMIN_HOST}:8443 {
+ tls /certs/local.pem /certs/local-key.pem
+ reverse_proxy host.docker.internal:3101
+}

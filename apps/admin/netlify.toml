@@ -1,0 +1,11 @@
+# Netlify UI: package directory apps/admin; leave base directory unset.
+# This site must have an origin distinct from the chat site.
+[build]
+command = "pnpm check && pnpm --filter @vault/admin build"
+publish = "apps/admin/.next"
+
+[build.environment]
+NODE_VERSION = "24"
+PNPM_VERSION = "10.28.2"
+PNPM_FLAGS = "--frozen-lockfile"
+NEXT_TELEMETRY_DISABLED = "1"

@@ -1,0 +1,13 @@
+"use client";
+import { useEffect, useState } from 'react';
+import { create } from 'zustand';
+import { product, text } from '@vault/shared';
+import { Button } from './ui/button';
+const useTheme = create<{dark:boolean;toggle:()=>void}>(set=>({dark:false,toggle:()=>set(s=>({dark:!s.dark}))}));
+interface InstallEvent extends Event { prompt: () => Promise<void>; }
+export function Shell() {
+ const {dark,toggle}=useTheme(); const [tab,setTab]=useState('chats'); const [status,setStatus]=useState(''); const [install,setInstall]=useState<InstallEvent>();
+ useEffect(()=>{ const listener=(event:Event)=>{event.preventDefault();setInstall(event as InstallEvent);}; window.addEventListener('beforeinstallprompt',listener); if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>setStatus(text.offlineSetupError)); return ()=>window.removeEventListener('beforeinstallprompt',listener); },[]);
+ async function persist(){try{setStatus(await navigator.storage?.persist?.()?text.storageOk:text.storageNo);}catch{setStatus(text.storageError);}}
+ return <div className={dark?'shell dark':'shell'}><aside><a className="brand" href="/" aria-label={product.name}><span className="mark">V</span>{product.name}</a><p className="eyebrow">{text.privateDesign}</p><nav aria-label="Main navigation"><Button aria-pressed={tab==='chats'} onClick={()=>setTab('chats')}>{text.chats}</Button><Button aria-pressed={tab==='settings'} onClick={()=>setTab('settings')}>{text.settings}</Button></nav><div className="aside-note">{text.historyNote}</div></aside><main><header><span className="badge">{text.stage}</span><Button onClick={toggle} aria-label={text.theme}>{dark?text.light:text.dark}</Button></header><section className="hero"><span className="eyebrow">{text.privateEyebrow}</span><h1>{text.title}</h1><p>{text.intro}</p></section>{tab==='chats'?<section className="empty"><div className="lock" aria-hidden="true">◇</div><h2>{text.empty}</h2><p>{text.emptyDetail}</p><span className="pill">{text.pending}</span></section>:<section className="empty settings"><h2>{text.settings}</h2><Button onClick={()=>void persist()}>{text.storage}</Button><Button onClick={()=>{if(install)void install.prompt();else setStatus(text.installHelp);}}>{text.install}</Button><p>{text.installHelp}</p></section>}<p role="status" className="status">{status}</p><footer>{text.previewFooter}</footer></main></div>;
+}
