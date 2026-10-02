@@ -17,6 +17,7 @@ supabase/.temp/
 .token
 .token.*
 .vercel/
+.netlify/
 
 # Owner-provided Supabase credentials
 /supabasesettings
