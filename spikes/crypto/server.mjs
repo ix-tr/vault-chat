@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 
 const assets = new Map([
+  ...['unlock.mjs','identity.mjs','store.mjs'].map(path => ['/packages/crypto/src/' + path, ['../../packages/crypto/src/' + path, 'text/javascript']]),
   ...['device-identity.mjs', 'passkey-prf.mjs', 'unlock-harness.mjs', 'generated-unlock/credential-crypto.js'].map((path) => ['/' + path, [path, 'text/javascript']]),
   ['/worker.mjs', ['worker.mjs', 'text/javascript']],
   ['/harness.mjs', ['harness.mjs', 'text/javascript']],

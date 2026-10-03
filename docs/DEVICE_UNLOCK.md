@@ -1,5 +1,7 @@
 # Credential unlock evaluation
 
+Current continuation: see [DEVICE_ACTIVATION.md](DEVICE_ACTIVATION.md) for the application Worker, activation/login UI and complete browser test results. Earlier increment descriptions below are historical; hosted deployment and owner enrollment remain pending.
+
 Updated: 2026-10-03. Phase 0.5 isolated experiment; production apps and `@vault/crypto` remain inactive.
 
 ## Implemented boundary

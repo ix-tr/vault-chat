@@ -104,6 +104,10 @@ async function run(op, value) {
   await ready;
   if (op === 'init') return start(value);
   if (!db || !identity) throw new Error('NOT_INITIALIZED');
+  if (op === 'proveEnrollment') {
+    if (value.origin !== self.location.origin) throw new Error('WRONG_UNLOCK_ORIGIN');
+    return identity.prove_enrollment(provider, value.origin, bytes(value.challenge));
+  }
   // Expose only the operation allowlist; no snapshot/key export RPC exists.
   if (op === 'outbox') return readOutbox(db, limits.maxOutbox);
   if (op === 'members') return Array.from(group.member_indices());

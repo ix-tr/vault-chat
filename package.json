@@ -8,7 +8,7 @@
     "dev:stop": "node scripts/local.mjs stop",
     "dev:reset": "node scripts/local.mjs reset",
     "certs": "node scripts/local.mjs certs",
-    "build": "pnpm -r build",
+    "build": "pnpm build:auth-assets && pnpm -r build",
     "lint": "eslint .",
     "typecheck": "pnpm -r typecheck && tsc -p tsconfig.tooling.json",
     "test": "vitest run",
@@ -22,7 +22,11 @@
     "build:crypto-spike": "node scripts/build-crypto-spike.mjs",
     "test:crypto-spike": "playwright test --config playwright.crypto.config.ts",
     "build:unlock-spike": "node scripts/build-unlock-spike.mjs",
-    "test:db": "node scripts/test-db.mjs"
+    "test:db": "node scripts/test-db.mjs",
+    "test:auth": "node --test tests/auth/chat-auth.test.mjs",
+    "auth:bootstrap": "node scripts/auth-bootstrap.mjs",
+    "build:auth-assets": "node scripts/build-auth-assets.mjs",
+    "test:auth-browser": "playwright test --config playwright.auth.config.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -34,5 +38,10 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.48.0",
     "vitest": "^4.1.11"
+  },
+  "dependencies": {
+    "@simplewebauthn/browser": "14.0.0",
+    "@simplewebauthn/server": "14.0.3",
+    "@supabase/supabase-js": "2.117.2"
   }
 }

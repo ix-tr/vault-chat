@@ -4,6 +4,7 @@ use openmls::prelude::*;
 use openmls_basic_credential::SignatureKeyPair;
 use openmls_rust_crypto::OpenMlsRustCrypto;
 use openmls_traits::OpenMlsProvider;
+use openmls_traits::signatures::Signer;
 use std::io::Write;
 use tls_codec::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
@@ -147,6 +148,15 @@ impl Identity {
     }
     pub fn public_key(&self) -> Vec<u8> {
         self.signer.public().to_vec()
+    }
+    pub fn prove_enrollment(&self, provider: &Provider, origin: &str, challenge: &[u8]) -> Result<Vec<u8>, JsError> {
+        if challenge.len() != 32 { return Err(err("INVALID_CHALLENGE")); }
+        check(origin.as_bytes(), provider.max_wire)?;
+        let name = BasicCredential::try_from(self.credential.credential.clone()).map_err(|_| err("INVALID_IDENTITY"))?;
+        let name = std::str::from_utf8(name.identity()).map_err(|_| err("INVALID_IDENTITY"))?;
+        let payload = serde_json::to_vec(&("vault-device-enrollment", 1, name, origin, challenge, self.signer.public())).map_err(|_| err("ENCODING_FAILED"))?;
+        check(&payload, provider.max_wire)?;
+        self.signer.sign(&payload).map_err(|_| err("SIGNING_FAILED"))
     }
     pub fn key_package(&self, provider: &Provider) -> Result<KeyPackage, JsError> {
         let bundle = openmls::key_packages::KeyPackage::builder()

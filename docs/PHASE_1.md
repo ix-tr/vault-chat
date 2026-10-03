@@ -1,5 +1,7 @@
 # Phase 1 — account/device database foundation
 
+Current continuation: see [DEVICE_ACTIVATION.md](DEVICE_ACTIVATION.md) for the application Worker, activation/login UI and complete browser test results. Earlier increment descriptions below are historical; hosted deployment and owner enrollment remain pending.
+
 Updated: 2026-10-03. This is the first database increment, not completed Phase 1 or production activation. The isolated crypto adapter still has review and real-authenticator/device integration gates. Schema development proceeds separately without issuing real accounts, sessions or keys.
 
 ## Implemented
@@ -27,3 +29,5 @@ Local `pnpm test:db` and `pnpm check` pass. CI includes a separate `database` jo
 Design server-verified passkey registration/assertion, single-use expiring activation challenges, authenticated account-subject binding and scoped session issuance. Add replay, expiry, failed verification and race tests before connecting the UI. Implement admin role invariants and bootstrap with separate admin step-up in their own guarded increment. Hosted migration and real account activation wait for those complete boundaries.
 
 Activation continuation: server-only token creation and transactional issuance/completion now exist, with expiry, reissue revocation, replay rejection, atomic device/account commit and three two-connection race tests. See [ACTIVATION.md](ACTIVATION.md). This supersedes the earlier absence of activation SQL primitives; no public activation endpoint or verified authentication enrollment is enabled.
+
+Passkey server continuation now adds verified WebAuthn registration/assertions, device identity possession proofs, browser-bound single-use challenges, opaque scoped chat sessions, rate controls, role preservation and a private-output bootstrap CLI. See [CHAT_AUTH.md](CHAT_AUTH.md) for the current architecture and exact limitations; it supersedes earlier statements that no session issuer, roles or HTTP route code exists. Routes remain disabled by default; no production Worker, activation/login UI, live migration or real account is enabled. Phase 1 is still incomplete.

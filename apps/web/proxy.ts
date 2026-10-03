@@ -11,4 +11,4 @@ export function proxy(request: NextRequest) {
  response.headers.set('Cache-Control','no-store');
  return response;
 }
-export const config = { matcher: ['/((?!_next/static|_next/image|favicon.ico|icon.svg|sw.js).*)'] };
+export const config = { matcher: ['/((?!_next/static|_next/image|favicon.ico|icon.svg|sw.js|crypto-assets/).*)'] };

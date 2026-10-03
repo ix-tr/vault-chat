@@ -1,0 +1,9 @@
+{
+  "revision": "3a3e35de3feeca8f6605143c464d5452ae584d43",
+  "compiler": "rust:1.93.1-slim@sha256:c0a38f5662afdb298898da1d70b909af4bda4e0acff2dc52aea6360a9b9c6956",
+  "bindgenVersion": "0.2.126",
+  "adapterSha256": "4b3f10c56708eabbfdf2b8074951d44dd1e81c337990209f6a8f135e16b956cd",
+  "wasmBytes": 2660773,
+  "sha256": "937acf3254852fc482241131541147bc208abe0b7522b8d947e6d44efa2ba4c4",
+  "glueSha256": "e40921e7076514fcde781a35f98cce17fb55ab3882235b8092efe487c8b5bc2e"
+}

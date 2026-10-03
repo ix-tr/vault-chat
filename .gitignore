@@ -31,3 +31,6 @@ __pycache__/
 /spikes/crypto/generated-adapter/
 
 spikes/crypto/generated-unlock/
+
+# Rebuilt from the checksummed vendor core and reviewed Worker source.
+/apps/web/public/crypto-assets/
