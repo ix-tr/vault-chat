@@ -20,12 +20,15 @@
     "test:hosted": "playwright test --config playwright.hosted.config.ts",
     "verify:hosted": "node scripts/verify-hosted.mjs",
     "build:crypto-spike": "node scripts/build-crypto-spike.mjs",
-    "test:crypto-spike": "playwright test --config playwright.crypto.config.ts"
+    "test:crypto-spike": "playwright test --config playwright.crypto.config.ts",
+    "build:unlock-spike": "node scripts/build-unlock-spike.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.57.0",
+    "esbuild": "0.28.2",
     "eslint": "^10.12.0",
+    "libsodium-wrappers-sumo": "0.8.4",
     "supabase": "^2.65.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.48.0",

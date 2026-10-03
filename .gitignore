@@ -29,3 +29,5 @@ __pycache__/
 /spikes/crypto/generated/
 
 /spikes/crypto/generated-adapter/
+
+spikes/crypto/generated-unlock/

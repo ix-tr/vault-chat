@@ -34,7 +34,7 @@ export function readState(db) {
   });
 }
 
-export function commitState(db, previousRevision, record, outbound, maxOutbox) {
+export function commitState(db, previousRevision, record, outbound, maxOutbox, unlockEnvelope) {
   return new Promise((resolve, reject) => {
     let tx;
     try {
@@ -59,6 +59,7 @@ export function commitState(db, previousRevision, record, outbound, maxOutbox) {
           if (count.result + outbound.length > maxOutbox) {
             failure = 'OUTBOX_FULL'; tx.abort(); return;
           }
+          if (unlockEnvelope) state.put(unlockEnvelope, 'unlock');
           state.put(record, 'current');
           state.put(record.revision, 'head');
           for (let index = 0; index < outbound.length; index++) {
@@ -76,6 +77,15 @@ export function readOutbox(db, limit) {
   return new Promise((resolve, reject) => {
     const tx = db.transaction('outbox', 'readonly');
     const request = tx.objectStore('outbox').getAll(null, limit);
+    tx.oncomplete = () => resolve(request.result);
+    tx.onabort = () => reject(new Error('STORAGE_FAILED'));
+  });
+}
+
+export function readUnlockEnvelope(db) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('state', 'readonly');
+    const request = tx.objectStore('state').get('unlock');
     tx.oncomplete = () => resolve(request.result);
     tx.onabort = () => reject(new Error('STORAGE_FAILED'));
   });

@@ -21,7 +21,7 @@ flowchart LR
     E --> F[Return wire data or plaintext]
 ```
 
-Snapshots use Web Crypto AES-256-GCM with a fresh random 96-bit IV. Authenticated additional data binds schema, storage namespace and revision. The unlock key is a non-extractable CryptoKey supplied at runtime; it is never written to IndexedDB. The schema stores only encrypted snapshot envelopes, a revision marker and outgoing wire records. Production namespaces must use opaque device identifiers; the harness uses named demo identities.
+Snapshots use Web Crypto AES-256-GCM with a fresh random 96-bit IV. Authenticated additional data binds schema, storage namespace and revision. The legacy harness supplies a non-extractable runtime CryptoKey. The credential harness now creates and unwraps that key inside the Worker; only its encrypted envelope is persisted. See [DEVICE_UNLOCK.md](DEVICE_UNLOCK.md). The schema stores only encrypted snapshot envelopes, a revision marker and outgoing wire records. Production namespaces must use opaque device identifiers; the harness uses named demo identities.
 
 Snapshot, revision marker and outgoing wire data commit atomically with a requested `strict` durability hint. Unsupported strict transactions fail with `STRICT_STORAGE_UNSUPPORTED`; the experiment does not silently lower durability. Revision comparison prevents two stale Workers from both committing and releasing their newly generated ciphertext. A snapshot/marker mismatch rejects a partial state rollback. Outbox capacity aborts the entire transaction and closes the Worker. If the transaction committed but its reply was lost, recovery reads the existing outbox wire bytes rather than re-encrypting the message.
 
