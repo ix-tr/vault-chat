@@ -33,3 +33,9 @@ The earlier nonce failure was limited to an injected non-framework script and di
 ## Remaining device verification
 
 The phase is complete using the explicitly permitted WebKit/Chromium emulation fallback. Physical Android, radio-off installed-PWA behavior, keyboard/safe-area edge cases and storage eviction remain unverified. These are recorded limitations, not device passes. Push, calls and account security belong to later phases. See [device checklist](DEVICE_TESTING.md).
+
+## Offline reopen correction — 2026-10-03
+
+Following the owner report, the worker now caches only the standalone `/offline.html` document in `vault-shell-v2` and claims open clients after successful installation/activation. The fallback has no external assets or Next.js hydration dependency. Failed navigation or HTTP 5xx serves this generic screen; a missing cache returns a plain reconnect message. Old shell caches are removed during activation. The retry link returns to the online shell when the network recovers. No conversations or account data are cached.
+
+The five-profile network-proxy test now checks first-visit control without reloading, closes the page, cuts actual network access, and opens a fresh page using the same browser storage. It also tests an upstream 503 and successful retry. Local result: 42 passed, 3 existing offline-emulation skips; `pnpm check` passes. This simulates page closure/reopening, not killing an iOS app/browser process or rebooting a phone. The owner subsequently clarified that opening the installed app while offline already displays the expected generic offline screen in the deployed preview. The earlier failure interpretation is superseded: physical offline fallback is owner-reported passing. This change is additional hardening; physical validation of the new version remains pending.
