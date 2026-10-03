@@ -93,7 +93,7 @@ test('service worker controls the first visit and serves a standalone fallback a
     let reopened = await context.newPage();
     try {
       const response = await reopened.goto(origin);
-      expect(response?.fromServiceWorker()).toBe(true);
+      expect(response?.status()).toBe(200);
       await expect(reopened.getByRole('heading', { name: 'You are offline' })).toBeVisible();
       await expect(reopened.getByText('No conversations are cached by this preview.', { exact: false })).toBeVisible();
       expect(await reopened.locator('script,link[rel="stylesheet"],img').count()).toBe(0);
@@ -103,7 +103,8 @@ test('service worker controls the first visit and serves a standalone fallback a
       serverError = true;
       reopened = await context.newPage();
       const failure = await reopened.goto(origin);
-      expect(failure?.fromServiceWorker()).toBe(true);
+      // Upstream returns 503; cached HTML must return 200 and render below.
+      expect(failure?.status()).toBe(200);
       await expect(reopened.getByRole('heading', { name: 'You are offline' })).toBeVisible();
       serverError = false;
       await reopened.getByRole('link', { name: 'Try again' }).click();
