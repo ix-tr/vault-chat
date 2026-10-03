@@ -45,3 +45,9 @@ Security takes precedence over convenience. When choosing between alternatives, 
 ## Hosted site record
 
 Chat origin: https://vcht.netlify.app (owner reported successful deployment). Admin origin: https://comfy-croquembouche-2be7d5.netlify.app (owner provided URL after reporting the expected admin preview). Do not configure a shared origin or register production passkeys before stable origins and authentication are ready.
+
+## Repository visibility and branch protection
+
+Updated by the owner on 2026-10-03: public repository visibility is permitted to enable main branch protection on GitHub Free. The agent scanned commit history and staged changes with redacted gitleaks; no leaks were detected, then changed `ix-tr/vault-chat` to public. This supersedes the earlier private-repository-only direction. Public visibility does not imply a finished messenger or a selected open-source license.
+
+Main now requires pull requests and up-to-date successful `verify` and `secrets` checks from GitHub Actions. Administrators are subject to the rules; force pushes and deletion are disabled. No outside approving reviewer is mandatory for the single-owner workflow. Normal updates go through branches and PRs.

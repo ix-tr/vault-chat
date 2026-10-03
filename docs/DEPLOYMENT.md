@@ -1,5 +1,7 @@
 # Deployment — Netlify and hosted Supabase
 
+Repository update, 2026-10-03: owner-authorized public visibility is now enabled after a clean history/staged secret scan. `main` is protected against force pushes and deletion, requires PRs and up-to-date GitHub Actions `verify`/`secrets` checks, and enforces these rules for administrators. Active update: https://github.com/ix-tr/vault-chat/pull/5. Earlier private/bootstrap instructions below are historical; do not rerun initial-publication scripts against the existing repository. Use a normal clone, feature branches and PRs.
+
 Latest admin follow-up, 2026-10-03: the owner made the closed admin preview public. The agent reran `node scripts/verify-hosted.mjs`: all six checks passed, including two admin responses with fresh nonces and the stricter style CSP. `pnpm test:hosted --grep "admin preview"` passed all five profiles. This supersedes the earlier HTTP 401 blocker. Application admin authentication/actions are still absent. Phase 0 remains open for updated successful CI; real-device verification remains separately pending.
 
 Latest independent verification, 2026-10-03: CLI network access is now enabled. Chat HTTP security/PWA checks passed, and the live chat five-profile browser matrix passed with 37 passes and 3 offline-emulation skips covered by a separate unavailable-network fallback test. Admin returns HTTP 401; its application page and security headers remain unverified. Local full matrix: 42 passed, 3 skipped. GitHub Checks #10 failed at E2E; local test fixes are not yet published. See HANDOFF.md and DEVICE_TESTING.md for evidence and limitations.
@@ -10,7 +12,7 @@ Owner-confirmed on 2026-10-03: use Netlify and hosted Supabase for development a
 
 ## Two separate sites
 
-Create two Netlify sites from the same private GitHub repository. Distinct HTTPS hostnames, independent cookies/sessions and no shared browser storage remain mandatory. Platform-provided `netlify.app` names are sufficient initially; use stable names before passkey registration. The admin preview has no login or administrative actions yet.
+Create two Netlify sites from the same GitHub repository. Distinct HTTPS hostnames, independent cookies/sessions and no shared browser storage remain mandatory. Platform-provided `netlify.app` names are sufficient initially; use stable names before passkey registration. The admin preview has no login or administrative actions yet.
 
 | Setting | Chat | Admin |
 | --- | --- | --- |

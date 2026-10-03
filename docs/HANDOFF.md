@@ -36,3 +36,15 @@ Dependency follow-up: upgraded the development test runner from Vitest 3.2.7 to 
 Owner mobile report, 2026-10-03: the owner reports that mobile testing passed. Device/browser identities and whether installed-PWA, offline revisit, storage, keyboard and safe-area scenarios were tested are awaiting clarification. Record this as owner-reported mobile success, without marking all physical iOS/Android checklist items complete.
 
 Physical iPhone clarification, 2026-10-03: the owner verified Safari and the installed Home Screen app, reported a well-fitting layout in both, and saw persistent storage granted. This supersedes the earlier unspecified mobile report. No physical Android, offline, push or keyboard-edge-case pass is inferred.
+
+## Repository publication — 2026-10-03
+
+Prepared a normal clone at `/tmp/vault-sync-01f3_aqp/repo` because the workspace `.git` is empty/read-only. Compared tracked source with remote main and preserved unrelated remote files. Staged diff checks and redacted gitleaks scan passed. Commit `c07316f3359bf5d0374c1e914903f69e6e33c40c` was pushed normally to `fix/phase-zero-verification`; draft PR: https://github.com/ix-tr/vault-chat/pull/5. Main was not merged or force-pushed. New CI runs #11 and #12 were in progress at publication. Earlier unpublished notes describe the prior state.
+
+GitHub confirms `main` is unprotected. The protection and ruleset endpoints return HTTP 403 with “Upgrade to GitHub Pro or make this repository public to enable this feature.” Account plan is Free and the repository is private. No plan purchase, visibility change or protection bypass was performed. Preserve private visibility; until an eligible plan is chosen, reviewing PRs and checking CI is a process convention, not a GitHub-enforced branch rule. Official availability: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches.
+
+## Current repository status — supersedes private/unpublished notes
+
+The owner authorized public visibility to enable branch protection on GitHub Free. Repository is now public. History scan passed (seven commits at scan time), with no leaks detected. Main requires PRs, strict/up-to-date `verify` and `secrets` GitHub Actions checks, linear history and resolved conversations. Rules include admins; force pushes and deletion are disabled. No purchase or history rewrite occurred.
+
+PR #5 contains commit `c07316f` and follow-up `6eee058`. Push CI #11 passed for c07316f. Its PR CI #12 failed because Gitleaks could not read PR metadata (`Resource not accessible by integration`), not because the local scan found a secret. The follow-up gives only the secrets job `pull-requests: read` and disables PR comments, retaining read-only tokens. New CI for this fix was still running when this update was prepared. Repository-visibility documentation is included in the same PR. Main has not been merged; do not claim the default branch was updated.
