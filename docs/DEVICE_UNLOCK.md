@@ -35,3 +35,7 @@ pnpm test:crypto-spike --workers=3
 ```
 
 The unlock bundle is generated with pinned esbuild 0.28.2 and ignored. CI rebuilds it from the frozen lockfile. Only the loopback evaluation server serves these modules; the hosted chat/admin previews do not expose this experiment.
+
+## Virtual authenticator follow-up — 2026-10-03
+
+Four additional tests pass in desktop Chromium and Android Chromium emulation using CDP virtual CTAP2 authenticators and actual browser `navigator.credentials.create/get` calls. Both PRF-capable key wrapping/reopening and new-enrollment password fallback without PRF survive a full page reload. No mock assertion is used in these four tests. The earlier 75 tests remain passing; combined coverage is 79 cases. CDP virtual authenticator support is Chromium-only, so this file is explicitly excluded from WebKit/Firefox/iOS projects; their existing fallback/primitive coverage remains. The test uses a localhost RP origin, public demo envelopes and fixture challenges; no backend assertion verification or session is created. Physical phone/authenticator tests and complete Worker integration remain pending. See [CDP WebAuthn options](https://chromedevtools.github.io/devtools-protocol/tot/WebAuthn/#type-VirtualAuthenticatorOptions).
