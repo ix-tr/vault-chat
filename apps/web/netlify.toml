@@ -9,3 +9,15 @@ NODE_VERSION = "24"
 PNPM_VERSION = "10.28.2"
 PNPM_FLAGS = "--frozen-lockfile"
 NEXT_TELEMETRY_DISABLED = "1"
+
+# Netlify serves public assets directly; Next response headers cover its server.
+[[headers]]
+for = "/crypto-assets/*"
+[headers.values]
+Content-Security-Policy = "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'"
+Cross-Origin-Resource-Policy = "same-origin"
+Cross-Origin-Embedder-Policy = "require-corp"
+Cache-Control = "no-store"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "no-referrer"
+X-Frame-Options = "DENY"
