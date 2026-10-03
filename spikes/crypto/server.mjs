@@ -4,8 +4,14 @@ import { readFile } from 'node:fs/promises';
 const assets = new Map([
   ['/worker.mjs', ['worker.mjs', 'text/javascript']],
   ['/harness.mjs', ['harness.mjs', 'text/javascript']],
+  ['/state-worker.mjs', ['state-worker.mjs', 'text/javascript']],
+  ['/state-store.mjs', ['state-store.mjs', 'text/javascript']],
+  ['/state-harness.mjs', ['state-harness.mjs', 'text/javascript']],
+  ['/lost-reply-worker.mjs', ['lost-reply-worker.mjs', 'text/javascript']],
   ['/generated/openmls_wasm.js', ['generated/openmls_wasm.js', 'text/javascript']],
   ['/generated/openmls_wasm_bg.wasm', ['generated/openmls_wasm_bg.wasm', 'application/wasm']],
+  ['/generated-adapter/openmls_wasm.js', ['generated-adapter/openmls_wasm.js', 'text/javascript']],
+  ['/generated-adapter/openmls_wasm_bg.wasm', ['generated-adapter/openmls_wasm_bg.wasm', 'application/wasm']],
 ]);
 const base = new URL('./', import.meta.url);
 // Loopback, static allowlist, no secrets, production apps do not import this server.
