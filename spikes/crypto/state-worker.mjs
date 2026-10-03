@@ -160,8 +160,9 @@ self.onmessage = ({ data: { id, op, value } }) => {
       const known = /^[A-Z][A-Z_]+$/.test(error?.message ?? '');
       self.postMessage({ id, ok: false, code: known ? error.message : 'CRYPTO_STATE_FAILED' });
     } finally {
-      value?.credentials?.passphrase?.fill(0);
-      value?.credentials?.result?.fill(0);
+      for (const secret of [value?.credentials?.passphrase, value?.credentials?.result]) {
+        if (secret instanceof Uint8Array) secret.fill(0);
+      }
     }
   });
 };
