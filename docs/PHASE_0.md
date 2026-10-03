@@ -1,63 +1,80 @@
-# Phase 0 — scaffold prepared, validation incomplete
+# Phase 0 — local and hosted browser validation passed, updated CI pending
 
-## Delivered files
+## Current scope
 
-pnpm workspace, two separate Next.js apps, centralized English text/product name, Tailwind/shadcn-compatible button and Zustand theme, mobile empty-state shell, private closed admin preview, PWA manifest/icons/generic offline page, install guidance and storage warning. Local Supabase config disables public signup. Compose provides HTTPS gateway, coturn and LiveKit; the local script generates ignored secrets and certificates. Tests, hooks, CI, dependency update configuration, license placeholder and security/setup docs are included.
+The owner superseded local-only deployment with Netlify + hosted Supabase. Local Docker/mkcert services remain optional and are not a hosted completion gate. The project remains a foundation preview: no working account activation/login, admin capabilities or message encryption/delivery.
 
-## Validation on 2026-10-02
+## Delivered
 
-- Passed: Node syntax checks for orchestration, hook installer and service worker; JSON parsing of all package/config JSON; recovery decision consistency review; reset without the explicit data-loss flag correctly refuses to run.
-- Blocked: pnpm bootstrap returned EAI_AGAIN resolving registry.npmjs.org; offline npm cache has no pnpm package.
-- Blocked: Docker socket permission denied. No containers were started or image tags validated.
-- Missing prerequisite: mkcert is not on PATH.
-- Not run: dependency install, lockfile generation, lint, TypeScript, Vitest, Next.js builds, Playwright/Lighthouse, real iOS/Android, local HTTPS and service readiness.
+- pnpm workspace with separate Next.js chat/admin apps and shared English text/product configuration.
+- Mobile layout, light/dark theme, Tailwind/shadcn-compatible button and Zustand state.
+- Manifest/icons, generic offline fallback, installation guidance and persistent-storage request/warning.
+- Separate CSP policies, per-request script nonces, COOP/COEP and other baseline headers.
+- Netlify per-app build files and local/hosted Playwright configurations.
+- Optional local Supabase, Caddy, coturn/LiveKit configuration and prerequisite diagnostic.
+- CI, dependency update configuration, secret scanning/publishing helpers and security/setup documentation.
 
-## Follow-up validation
+## Recorded sites
 
-- Passed: three dependency-free infrastructure cases, covering distinct/matching HTTPS origins, invalid and injected IP/hostname/port configuration, quoted dotenv parsing and environment precedence.
-- Passed: direct `docker compose --env-file .env.example -f infra/compose.yaml config --quiet` validation; this does not start services or verify image availability.
-- Added `node scripts/doctor.mjs` for a secret-free prerequisite report from the owner's terminal. Child-process probes in the restricted agent may themselves return EPERM even where a direct command succeeds.
-- Added each app's own `allowedDevOrigins` hostname for LAN reverse-proxy development; no cross-app wildcard. See [Next.js documentation](https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins).
-- Package download retry still failed with EAI_AGAIN; Docker daemon and missing tools remain unresolved in this session.
+| App | Origin | Evidence |
+| --- | --- | --- |
+| Chat | https://vcht.netlify.app | Owner reports the corrected deploy succeeded and the site now works. |
+| Admin | https://comfy-croquembouche-2be7d5.netlify.app | Owner reports the expected Administration / Access unavailable preview. |
 
-## Completion gates
+These are user-reported results. Agent web requests remain inaccessible and shell DNS is restricted; no independent hosted HTTP/CSP/PWA pass is claimed.
 
-Do not call this phase finished until dependencies and lockfile are installed, all checks pass, Compose/Supabase start under trusted HTTPS and the device matrix passes or explicit emulation-only results are recorded. Image versions are scaffold choices and require registry verification. CI intentionally uses frozen installation and will fail until a real lockfile is committed.
+## Verification
 
-No encrypted seed exists yet: it depends on the approved real client protocol and account schema. No load test pretends to measure messaging before messaging exists. Phase 0.5 starts after Phase 0 validation and records the audited crypto decision.
+Passed locally: lint, all workspace and test/config TypeScript checks, infrastructure cases, Vitest origin validation, JSON/TOML parsing, Node syntax checks, staged secret scans and three scoped-update safety tests. Native Node tests report three cases when invoked directly. Next.js type generation runs before app typechecking for fresh checkouts.
 
-## Owner terminal verification
+Owner prerequisite checks passed after installing pnpm/mkcert/gitleaks and generating trusted local certificates. A pnpm lockfile exists; ESLint was updated to version 10. Initial E2E results (27 failures, 3 passes) were invalid for chat: the tests reused Open WebUI on port 3000. Dedicated test ports and server reuse refusal fix that configuration; WebKit also lacked native libraries on CachyOS. A subsequent Netlify chat build correctly selected apps/web but linted generated .netlify dependencies. Generated-directory exclusions fix that issue while retaining project lint rules; the owner now reports successful redeployment.
 
-The owner ran the diagnostic: Docker daemon, Compose, Node.js, origin configuration and npm registry connection passed. pnpm, mkcert and gitleaks are absent; dependencies/lockfile and local certificates still need creation. Agent Docker/network access restrictions must not be confused with host failures.
+## Remaining completion gates
 
-Local CachyOS/Arch package metadata confirms mkcert and gitleaks are available. Its pnpm package is a different major version; install the project's exact pnpm version into ignored `.tools` rather than changing project tooling.
+- Verify hosted chat theme/settings and admin closed preview/security headers. Chat HTTP security-header checks passed in the owner's latest probe; browser behavior remains separate.
+- Pass Chromium + WebKit/mobile projects, and Firefox, on a suitable runner; distinguish emulation from physical devices.
+- Verify iPhone Safari/Android Chrome as available, install behavior, safe areas, layouts and storage warning.
+- Verify offline revisits show only the generic fallback, and no conversations are cached.
+- Confirm GitHub CI result; successful Netlify deployment does not by itself prove the browser matrix passed.
 
-## Installed-tool validation
+Phase 0 is not marked complete until these results are recorded. See DEVICE_TESTING.md. The next phase is the audited browser-crypto spike and ADR; no custom protocol may be substituted. Real encrypted seeds and delivery load tests depend on later implemented crypto/schema/message delivery.
 
-The owner installed dependencies, the local CA and leaf certificates. The owner diagnostic passed all prerequisites. The dependency lockfile now exists.
+## Latest continuation
 
-Agent checks: lint passed after adding the AbortSignal global, all four workspace TypeScript checks passed, three infrastructure cases passed and the Vitest origin test passed. Build and Playwright are still unverified: the web build failed when Turbopack tried to bind an internal port (EPERM); dev server startup also failed with listen EPERM. An alternate admin webpack attempt failed reading a child-process TypeScript config and does not count as successful validation.
+Owner confirmed public chat access works and said both checks look good. Do not infer detailed physical-device, installation or offline passes from that general report. Added a dependency-free hosted HTTP verifier and independent regression cases rejecting reused/mismatched nonces, unsafe scripts, missing headers and cached dynamic HTML. pnpm check and all three direct header cases passed. Actual hosted probes remain blocked in the agent; the owner can run the verifier without pnpm/PATH setup. Phase 0 completion still awaits runtime evidence.
 
-The install reported ESLint 9 as unsupported. Package requirements now target ESLint 10 and its matching JS config; the installed typescript-eslint peer range supports ESLint 10. Dependency install/lockfile refresh and lint must run again before these tooling changes are considered verified.
+## Hosted CSP failure — 2026-10-03
 
-An offline E2E case now verifies that only the generic /offline route is cached and that disconnected navigation displays it. Its TypeScript compilation passed; runtime execution remains pending. Root typechecking now includes test and Playwright/Vitest configuration files. Offline lockfile refresh for ESLint 10 failed because a transitive package metadata entry was not cached; use the owner terminal's networked pnpm install to finish the refresh.
+The owner's HTTP probe passed manifest/icons and the service-worker asset, but both HTML responses failed script nonce matching. The root cause is not yet established: the report contained no per-script evidence and the agent cannot fetch the hosted page. The pasted GitHub Actions list contains durations but no conclusions, so Checks #10 is not recorded as successful.
 
-## Owner E2E failure diagnosis
+The verifier now reports script index, inline/external classification, framework-asset classification and nonce presence/match booleans, without script content, URLs or nonce values. It also compares consecutive response nonces even when the first page fails another check. Attribute parsing rejects `data-nonce` as a substitute for `nonce` and accepts whitespace around attribute assignment. Four direct regression cases pass. These changes improve diagnosis; they do not establish that the deployed CSP issue is fixed. Run `node scripts/verify-hosted.mjs` again and provide its terminal diagnostics before selecting a deployment fix. No production CSP relaxation was introduced. Phase 0 remains open; crypto work is deferred.
 
-Owner result: 27 failed, 3 passed. Chromium/Firefox/Android error snapshots show Open WebUI login instead of Vault Chat: port 3000 was occupied and Playwright reused the unrelated server. Offline tests consequently waited for the wrong application's service worker. WebKit/iOS separately failed to launch because required native libraries were absent. The three passing admin preview checks do not validate chat behavior.
+Owner's subsequent diagnostics show all nine application scripts (seven framework assets, two inline scripts) match the response nonce on both requests. Only the tenth, external non-framework script lacks a nonce. This rules out an application-wide nonce propagation failure in the observed responses. Its URL is intentionally not captured, so its identity is not yet confirmed.
 
-Fixed configuration: manual development uses 3100/3101 with matching Caddy upstreams; E2E uses isolated 3200/3201 and reuseExistingServer=false. Rerun is pending. Do not treat these failures as evidence that the chat UI is broken, or ignore WebKit coverage. The owner requested direct live testing; whether this means local running UI or a public demo remains awaiting clarification.
+The likely source is Netlify's edge-injected Powered by Netlify badge / pre-launch toolbar. Official documentation confirms injection for dynamically rendered pages and incompatibility with strict script CSP: https://docs.netlify.com/manage/projects/powered-by-netlify-badge/. Disable the badge in each project's Project configuration > General > Powered by Netlify badge and save; the documented setting takes effect on the next request without redeployment. Retest before declaring resolved. If the extra script remains, investigate the pre-launch toolbar, RUM or configured snippet injection with additional source identification. Do not add unsafe-inline or automatically grant a nonce to the injected script. No new application deploy is required for this proposed platform-setting fix.
 
-## Hosting decision — 2026-10-03
+### Resolution verified by owner — 2026-10-03
 
-Owner clarified that direct live testing means Vercel + hosted Supabase. This supersedes the local-only target; local configuration remains optional. Lint and workspace/tooling typechecking passed after the port-isolation changes. Hosted deployment and browser validation are pending; no external resources have been created.
+After the badge-disable instructions, the owner reran `node scripts/verify-hosted.mjs` and supplied four PASS results: Chat response and CSP 1, Chat response and CSP 2, PWA manifest and icons, and Same-origin service worker asset. The observed chat nonce failure is resolved without weakening CSP. This is owner-run hosted HTTP evidence, not an independent agent fetch or browser/device pass. The exact injected script URL was never captured. Admin HTTP verification, hydration/theme behavior, installed-PWA/offline tests and CI conclusions remain outstanding; Phase 0 is still open.
 
-## Netlify preparation
+### Resumed checks — 2026-10-03
 
-Owner confirmed Netlify + hosted Supabase. Added per-app netlify.toml with root workspace builds, a separate hosted Playwright configuration with distinct HTTPS-origin validation, and provider setup instructions. Both TOML files parse. Full lint/typecheck/infra/Vitest checks passed before the final offline-test diagnostic assertion; that assertion is included in the subsequent typecheck/lint check. No external deployment or Git push is claimed; account connections/site URLs are pending.
+Local checks passed again. The hosted HTTP verifier now checks the separate admin origin twice, including nonce freshness, security headers, the stricter style policy and the closed preview. Nine directly executed infrastructure cases pass. Both origins can be overridden through `CHAT_TEST_ORIGIN` and `ADMIN_TEST_ORIGIN`; unsafe or shared-host overrides are rejected before requests.
 
-## GitHub publishing preparation
+Fresh hosted requests failed in the restricted agent environment. Local Playwright could not start because binding `127.0.0.1:3200` returned `EPERM`. These are environment failures, not evidence of an application regression or a browser pass. The earlier owner-run chat HTTP results remain valid historical evidence. Run the expanded verifier from a network-enabled terminal; the browser/device and CI gates remain open.
 
-Owner will select the GitHub repository in Netlify. Supabase settings were supplied as local `supabasesettings`, which is ignored and restricted to 0600. Added a temporary-metadata publisher for private `ix-tr/vault-chat`, with account verification, refusal of public/nonempty repos and a redacted staged secret scan. Preparation passed for 71 files; .token and supabasesettings were excluded. An actual attempt stopped at GitHub DNS/connectivity before remote creation or upload. App typechecks now run Next.js typegen first so fresh hosted builds do not depend on preexisting .next type files; typechecks passed.
+### Independent network and browser verification — 2026-10-03
 
-Owner reported initial remote push denied with HTTP 403 / write access not granted. The remote repository is empty; publishing awaits corrected token repository/write permissions. No successful upload or Netlify deployment is recorded.
+After the owner enabled CLI network access, independent chat HTML/CSP checks (two responses), manifest/icons and service-worker asset checks passed. Admin returned HTTP 401 on both requests, so its live application headers and closed preview remain unverified.
+
+The local five-profile matrix passed in the official Playwright 1.63.0 Noble container: 42 passed, 3 skipped. The live chat matrix passed: 37 passed, 3 skipped; the admin test was explicitly excluded because of HTTP 401. Skips cover only unreliable offline emulation outside Chromium; a loopback proxy test with the real worker and cached fallback passed on every profile when its network was cut. This does not verify installed-PWA or physical-phone behavior. DEVICE_TESTING.md records exact limitations and the container digest.
+
+`pnpm check` passed again. GitHub Actions API confirms Checks #10 failed at E2E, with check/build/secret scan passing and audit skipped. Local test fixes are prepared but unpublished; no successful new CI conclusion is claimed. The historical network-blocked notes above are superseded by these results. Phase 0 remains open for live admin access/header checks, successful updated CI (including audit), and separately recorded device testing as available. Crypto work has not started.
+
+Dependency follow-up: upgraded the development test runner from Vitest 3.2.7 to the patched 4.1.11 and updated pnpm-lock.yaml for GHSA-82fw-gwwq-j7x9 (https://github.com/vitest-dev/vitest/security/advisories/GHSA-82fw-gwwq-j7x9). After installation, `pnpm audit` reports no known vulnerabilities. The package cache required sandbox escalation; installation succeeded after approval. Browser tests use Playwright and were completed before this test-runner-only update.
+
+Latest admin follow-up, 2026-10-03: the owner made the closed admin preview public. The agent reran `node scripts/verify-hosted.mjs`: all six checks passed, including two admin responses with fresh nonces and the stricter style CSP. `pnpm test:hosted --grep "admin preview"` passed all five profiles. This supersedes the earlier HTTP 401 blocker. Application admin authentication/actions are still absent. Phase 0 remains open for updated successful CI; real-device verification remains separately pending.
+
+Owner mobile report, 2026-10-03: the owner reports that mobile testing passed. Device/browser identities and whether installed-PWA, offline revisit, storage, keyboard and safe-area scenarios were tested are awaiting clarification. Record this as owner-reported mobile success, without marking all physical iOS/Android checklist items complete.
+
+Physical iPhone clarification, 2026-10-03: the owner verified Safari and the installed Home Screen app, reported a well-fitting layout in both, and saw persistent storage granted. This supersedes the earlier unspecified mobile report. No physical Android, offline, push or keyboard-edge-case pass is inferred.

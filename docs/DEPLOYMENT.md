@@ -1,10 +1,18 @@
 # Deployment — Netlify and hosted Supabase
 
+Repository update, 2026-10-03: owner-authorized public visibility is now enabled after a clean history/staged secret scan. `main` is protected against force pushes and deletion, requires PRs and up-to-date GitHub Actions `verify`/`secrets` checks, and enforces these rules for administrators. Active update: https://github.com/ix-tr/vault-chat/pull/5. Earlier private/bootstrap instructions below are historical; do not rerun initial-publication scripts against the existing repository. Use a normal clone, feature branches and PRs.
+
+Latest admin follow-up, 2026-10-03: the owner made the closed admin preview public. The agent reran `node scripts/verify-hosted.mjs`: all six checks passed, including two admin responses with fresh nonces and the stricter style CSP. `pnpm test:hosted --grep "admin preview"` passed all five profiles. This supersedes the earlier HTTP 401 blocker. Application admin authentication/actions are still absent. Phase 0 remains open for updated successful CI; real-device verification remains separately pending.
+
+Latest independent verification, 2026-10-03: CLI network access is now enabled. Chat HTTP security/PWA checks passed, and the live chat five-profile browser matrix passed with 37 passes and 3 offline-emulation skips covered by a separate unavailable-network fallback test. Admin returns HTTP 401; its application page and security headers remain unverified. Local full matrix: 42 passed, 3 skipped. GitHub Checks #10 failed at E2E; local test fixes are not yet published. See HANDOFF.md and DEVICE_TESTING.md for evidence and limitations.
+
+Earlier owner verification, 2026-10-03: the owner reran `node scripts/verify-hosted.mjs` after the badge-disable instructions. Both chat HTML/CSP checks, manifest/icons and service-worker asset passed. The chat nonce mismatch is resolved without a CSP relaxation. This HTTP result does not verify admin, hydration, installed-PWA behavior or offline execution.
+
 Owner-confirmed on 2026-10-03: use Netlify and hosted Supabase for development and real-device testing. Netlify replaces Vercel; local Docker tooling remains optional. No site or cloud project has been created or deployed by this agent yet.
 
 ## Two separate sites
 
-Create two Netlify sites from the same private GitHub repository. Distinct HTTPS hostnames, independent cookies/sessions and no shared browser storage remain mandatory. Platform-provided `netlify.app` names are sufficient initially; use stable names before passkey registration. The admin preview has no login or administrative actions yet.
+Create two Netlify sites from the same GitHub repository. Distinct HTTPS hostnames, independent cookies/sessions and no shared browser storage remain mandatory. Platform-provided `netlify.app` names are sufficient initially; use stable names before passkey registration. The admin preview has no login or administrative actions yet.
 
 | Setting | Chat | Admin |
 | --- | --- | --- |
@@ -55,3 +63,38 @@ The current foundation is not a completed secure messenger: authentication, auth
 ## Push permission troubleshooting
 
 Owner reported `Write access to repository not granted` / HTTP 403 on the initial push. The repository exists but remains empty. For a fine-grained token, select resource owner ix-tr and repository vault-chat, with Contents read/write and Workflows read/write (the upload includes .github/workflows). For an existing repository, broader administration permission is unnecessary. If using a classic token instead, private repository push requires repo and workflow scopes. Update the local .token when replacing a token and rerun the publisher; do not paste it into chat. [GitHub token permissions](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
+
+## Reported deployed sites
+
+The owner reported successful Netlify build/deploy/post-processing for the chat site at https://vcht.netlify.app. This is owner-reported deployment success; the agent could not independently fetch the page/manifest/service worker through the web tool, and its shell could not resolve the hostname. No successful HTTP, CSP, PWA or device validation is claimed. The separate admin site has not yet been reported.
+
+Owner supplied the separate admin site URL https://comfy-croquembouche-2be7d5.netlify.app after reporting the expected Administration / Access unavailable preview. The two recorded hosts differ. This confirms the reported layout only, not implemented admin authentication/session isolation.
+
+## Hosted application mismatch reported
+
+The owner reports both recorded URLs render the admin preview. Local source/config separates the chat Shell from the admin page and selects the correct build/publish folders. Chat deployment is therefore not validated; inspect the vcht site's package directory, config selection, build command and publish path, and whether both URLs point to the same Netlify project. Correct chat settings and redeploy before claiming two functioning applications. No cloud configuration was inspected or changed by the agent.
+
+## Generated Netlify dependency lint failure
+
+Owner deploy log shows the chat command/publish path are correct, but ESLint scans `.netlify/plugins/deno-cli/deno_dir/...` and fails on dependency declarations. The local fix globally excludes .netlify and other generated tooling/output directories while retaining source lint rules; .netlify is also Git-ignored. pnpm check passed, and an ESLint API check confirmed the reported dependency path is ignored while shell.tsx is not.
+
+To apply only the two configuration files to the existing private repository from the owner terminal, run `python3 scripts/fix_netlify_deploy.py`. Unlike the initial publisher, this creates one normal commit on existing main, preserves the base tree and changes only eslint.config.mjs and .gitignore. It never force-updates the branch. Its preparation/secret scan and three mocked safety checks passed; real network publication cannot run from the restricted agent shell. New Netlify deploy/runtime verification remains pending.
+
+## Latest owner deployment result
+
+The owner reports the generated-dependency lint fix is deployed and https://vcht.netlify.app now works. This supersedes the earlier active build-failure report; automated hosted CSP/PWA/device verification is still pending. Use the recorded chat/admin URLs with playwright.hosted.config.ts.
+
+## Public chat access request
+
+Owner requested removal of the chat site's private visitor access so https://vcht.netlify.app can be accessed from other devices without a Netlify login. Change the vcht Netlify project visibility to Public in Project configuration > General > Visitor access. No change to private GitHub repository visibility is required. The agent lacks Netlify account access and has not changed or verified this setting; owner dashboard action is pending. This request concerns the chat site and does not authorize changing the admin site's visitor controls.
+
+## Public access and HTTP verification
+
+The owner confirms the chat site now works after removing private visitor access. The owner also reports that both checked views look good; exact device/browser/installation evidence has not been specified.
+
+Run `node scripts/verify-hosted.mjs` in the network-enabled owner terminal to check the chat page, fresh matching CSP/HTML script nonces, baseline headers, non-cacheable dynamic HTML, manifest/icons and service-worker MIME. The report is saved to ignored `test-results/hosted-http-report.json`; it contains no credentials/page content. This does not replace browser hydration/offline/installation/device tests. The restricted agent's own HTTP attempt failed on fetch/network access, not a confirmed application defect.
+# Strict CSP and Netlify-injected scripts
+
+For chat (`vcht`) and admin (`comfy-croquembouche-2be7d5`), disable **Project configuration > General > Powered by Netlify badge**, then save. Netlify documents that this is a per-project setting effective on the next request without a deploy: https://docs.netlify.com/manage/projects/powered-by-netlify-badge/. Its badge / pre-launch toolbar script is injected at the edge and can conflict with strict CSP. Do not weaken the application's script policy to permit it.
+
+On 2026-10-03, owner-supplied diagnostics confirmed nine application scripts with matching nonces and one additional external script without a nonce, on two chat requests. Badge injection is the leading explanation, not yet a confirmed identification. After changing the setting, run `node scripts/verify-hosted.mjs`; retain the failure if any extra nonced-script mismatch remains. The expanded verifier checks both chat and admin HTTP responses, including the closed admin preview and its stricter style policy. Browser/runtime verification remains separate. Run it from a network-enabled terminal; expect six PASS results before recording HTTP completion.
