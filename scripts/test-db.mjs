@@ -1,6 +1,7 @@
 import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync, readdirSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
+import { activationConcurrency } from '../tests/db/concurrent.mjs';
 import { setTimeout as delay } from 'node:timers/promises';
 
 // Disposable SQL fixture, never a hosted project: no secrets, network or mounts.
@@ -28,6 +29,7 @@ try {
     sql(`tests/db/${file}`, false);
     console.log(`Passed: ${file}`);
   }
+  await activationConcurrency(name);
   console.log(`Applied ${migrations.length} migration(s); disposable database checks passed.`);
 } catch (error) {
   if (error.stderr) process.stderr.write(error.stderr);
