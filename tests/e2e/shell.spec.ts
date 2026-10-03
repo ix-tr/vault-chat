@@ -22,9 +22,9 @@ test('offline navigation shows only a generic shell', async ({ page, context }) 
   await expect(page.getByRole('heading', { name: 'Your conversations. Your keys.' })).toBeVisible();
   await page.evaluate(async () => { await navigator.serviceWorker.ready; });
   await expect.poll(async () => page.evaluate(async () => {
-    const cache = await caches.open('vault-shell-v1');
+    const cache = await caches.open('vault-shell-v2');
     return (await cache.keys()).map(request => new URL(request.url).pathname);
-  })).toEqual(['/offline']);
+  })).toEqual(['/offline.html']);
   await page.reload();
   await context.setOffline(true);
   await page.goto('/unavailable');
@@ -53,12 +53,14 @@ test('theme control supports keyboard navigation', async ({ page }) => {
   await expect(page.locator('.shell')).toHaveClass(/dark/);
 });
 
-test('service worker shows generic fallback when its network is unavailable', async ({ page }, testInfo) => {
+test('service worker controls the first visit and serves a standalone fallback after closing and reopening', async ({ page, context }, testInfo) => {
   const upstream = testInfo.project.use.baseURL;
   if (!upstream) throw new Error('A chat baseURL is required.');
   let unavailable = false;
+  let serverError = false;
   const server = createServer(async (request, response) => {
     if (unavailable) { request.socket.destroy(); return; }
+    if (serverError) { response.writeHead(503).end(); return; }
     try {
       const result = await fetch(new URL(request.url ?? '/', upstream), { redirect: 'manual', signal: AbortSignal.timeout(10000) });
       response.statusCode = result.status;
@@ -82,14 +84,31 @@ test('service worker shows generic fallback when its network is unavailable', as
       await navigator.serviceWorker.register('/sw.js');
       await navigator.serviceWorker.ready;
     });
-    await expect.poll(() => page.evaluate(async () => (await (await caches.open('vault-shell-v1')).keys()).map(request => new URL(request.url).pathname))).toEqual(['/offline']);
-    await page.reload();
+    await expect.poll(() => page.evaluate(async () => (await (await caches.open('vault-shell-v2')).keys()).map(request => new URL(request.url).pathname))).toEqual(['/offline.html']);
+    // First visit becomes controlled without a reload. Close every page at
+    // this origin, cut the real network, and start a new page in the same store.
     await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+    await page.close();
     unavailable = true;
-    const response = await page.goto(`${origin}/unavailable`);
-    expect(response?.fromServiceWorker()).toBe(true);
-    await expect(page.getByRole('heading', { name: 'You are offline' })).toBeVisible();
-    await expect(page.getByText('No conversations are cached by this preview.', { exact: false })).toBeVisible();
+    let reopened = await context.newPage();
+    try {
+      const response = await reopened.goto(origin);
+      expect(response?.fromServiceWorker()).toBe(true);
+      await expect(reopened.getByRole('heading', { name: 'You are offline' })).toBeVisible();
+      await expect(reopened.getByText('No conversations are cached by this preview.', { exact: false })).toBeVisible();
+      expect(await reopened.locator('script,link[rel="stylesheet"],img').count()).toBe(0);
+      expect(await reopened.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await reopened.close();
+      unavailable = false;
+      serverError = true;
+      reopened = await context.newPage();
+      const failure = await reopened.goto(origin);
+      expect(failure?.fromServiceWorker()).toBe(true);
+      await expect(reopened.getByRole('heading', { name: 'You are offline' })).toBeVisible();
+      serverError = false;
+      await reopened.getByRole('link', { name: 'Try again' }).click();
+      await expect(reopened.getByRole('heading', { name: 'Your conversations. Your keys.' })).toBeVisible();
+    } finally { await reopened.close(); }
   } finally {
     server.closeAllConnections();
     await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
