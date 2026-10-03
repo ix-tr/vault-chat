@@ -1,6 +1,6 @@
 # Vault Chat
 
-English-only, mobile-first private messenger. **Phase 0 foundation only: no working authentication, admin actions, message delivery, or cryptographic protocol yet.** Confirmed scope lives in [project decisions](docs/PROJECT_DECISIONS.md).
+English-only, mobile-first private messenger. **Foundation preview: no working authentication, admin actions or encrypted message delivery yet. Phase 0.5 includes an isolated browser crypto experiment; see the [crypto ADR](docs/adr/0001-crypto-stack.md).** Confirmed scope lives in [project decisions](docs/PROJECT_DECISIONS.md).
 
 ## Hosting direction
 

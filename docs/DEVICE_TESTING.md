@@ -51,3 +51,9 @@ Owner mobile report, 2026-10-03: the owner reports that mobile testing passed. D
 ### Physical iPhone result — owner report, 2026-10-03
 
 The owner opened chat in iPhone Safari, added it to the Home Screen, and opened the installed app. Layout fit well in both contexts. The persistent-storage request displayed “Persistent storage granted.” This records a successful persistence request, not a guarantee against future data loss or a separate localStorage test. iOS version and phone model were not supplied. Offline revisits, push, keyboard-open/safe-area edge cases, admin behavior on the phone and Android physical-device testing remain unconfirmed. This clarification supersedes the earlier unspecified mobile report.
+
+## Phase 0.5 crypto experiment — 2026-10-03
+
+The isolated official OpenMLS 0.9.0 WASM experiment passed 15 tests (no skips) across desktop Chromium/WebKit/Firefox and Pixel 7/iPhone 13 Playwright emulation in the same official 1.63.0 Noble container. Cases cover separate Worker keys, real two/three-member messages, replay/tamper rejection, the upstream malformed-input trap and CSP denial. See [ADR 0001](adr/0001-crypto-stack.md).
+
+This is emulation only. The owner's physical iPhone report predates this experiment and covers the shell. Before real account/message integration, run physical iOS Safari/Home Screen and Android Chrome/installed-PWA checks for crypto cold load, reload/persistence, interrupted operations and device membership changes. Those flows are not yet implemented. No new physical-device pass is claimed.

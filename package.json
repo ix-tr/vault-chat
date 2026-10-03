@@ -18,7 +18,9 @@
     "doctor": "node scripts/doctor.mjs",
     "test:infra": "node --test tests/infra/*.test.mjs",
     "test:hosted": "playwright test --config playwright.hosted.config.ts",
-    "verify:hosted": "node scripts/verify-hosted.mjs"
+    "verify:hosted": "node scripts/verify-hosted.mjs",
+    "build:crypto-spike": "node scripts/build-crypto-spike.mjs",
+    "test:crypto-spike": "playwright test --config playwright.crypto.config.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

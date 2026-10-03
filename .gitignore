@@ -24,3 +24,6 @@ supabase/.temp/
 
 __pycache__/
 *.pyc
+
+# Reproducible experimental crypto output (never application assets)
+/spikes/crypto/generated/

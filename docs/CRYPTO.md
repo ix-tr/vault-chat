@@ -1,5 +1,7 @@
 # Cryptography status
 
-No protocol or crypto library has been selected. Phase 0.5 must investigate libsignal browser feasibility, OpenMLS-WASM and ts-mls, and whether MLS can serve both one-to-one and group conversations. Record audit scope (including wrapper/binding coverage), maturity, maintenance, browser results, worker integration and bundle size in `docs/adr/0001-crypto-stack.md` before deciding.
+Phase 0.5 evaluated libsignal, OpenMLS-WASM and ts-mls. [ADR 0001](adr/0001-crypto-stack.md) selects OpenMLS as the protocol-core direction for both one-to-one and group messaging. The unmodified official WASM experiment passed actual two/three-member message exchanges in separate Workers on five browser profiles.
 
-Do not implement a custom ratchet or group protocol. If no audited browser-compatible candidate works, stop and ask the owner. Seeds must eventually use real approved client crypto; no fake plaintext seed is supplied in Phase 0.
+The application has no active encryption adapter yet. The official experimental bindings trap on malformed input, use ephemeral storage and lack APIs needed for secure device revocation and persistence. The independent audit covers core components; it does not certify providers, bindings or app integration. Do not ship the spike as a production dependency.
+
+Next implement/review the narrow OpenMLS application binding and encrypted atomic storage, satisfying the ADR gates before real key registration or messaging. `pnpm build:crypto-spike` and `pnpm test:crypto-spike` reproduce the experiment. No custom ratchet/group protocol or fake encrypted seed is permitted. If the audited core cannot support the required browser integration, stop and ask the owner.
