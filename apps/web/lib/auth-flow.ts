@@ -31,14 +31,16 @@ function passwordBytes(password:string,policy:Policy) {
 }
 export class AuthFlow {
   private worker?:DeviceClient;
+  private readonly abort=new AbortController();
+  private ensureOpen(){if(this.abort.signal.aborted)throw new AuthError('USER_CANCELLED');}
   constructor(private askPassword:AskPassword){}
-  close(){this.worker?.close();this.worker=undefined;}
+  close(){this.abort.abort();this.worker?.close();this.worker=undefined;}
   private async method(record:Descriptor,policy:Policy):Promise<UnlockMethod> {
     const inspector=new DeviceClient(policy);
     try{return (await inspector.call<{method:UnlockMethod}>('inspect',workerConfig(record.binding,policy))).method;}finally{inspector.close();}
   }
   private async credentials(record:Descriptor,policy:Policy,method:UnlockMethod,options:RequestOptions) {
-    const credential=await getPasskey(options,record.credentialId,method.name==='webauthn-prf-hkdf-sha256'?new Uint8Array(method.prfInput):undefined);
+    const credential=await getPasskey(options,record.credentialId,method.name==='webauthn-prf-hkdf-sha256'?new Uint8Array(method.prfInput):undefined,this.abort.signal);
     let secret:Credentials;
     if(method.name==='webauthn-prf-hkdf-sha256'){
       const result=prfResult(credential);
@@ -49,8 +51,17 @@ export class AuthFlow {
     return {credential,secret};
   }
   async enroll(token:string) {
-    this.close();supported();
+    supported();
+    if(!navigator.locks?.request)throw new AuthError('UNSUPPORTED_BROWSER');
+    return navigator.locks.request('vault-chat-enrollment',{ifAvailable:true},async lock=>{
+      if(!lock)throw new AuthError('ENROLLMENT_IN_PROGRESS');
+      return this.enrollLocked(token);
+    });
+  }
+  private async enrollLocked(token:string) {
+    this.worker?.close();supported();this.ensureOpen();
     const info=await api<{account_id:string;policy:Policy}>('activation-info',{token});
+    this.ensureOpen();
     const policy=info.policy;let old=descriptor(policy);
     // An incomplete enrollment reuses its identity and KeyPackage. A fresh
     // passkey can rewrap that same encrypted state; no existing keys are reset.
@@ -67,9 +78,11 @@ export class AuthFlow {
       if(base64(publicDevice.signaturePublicKey)!==old.publicKey || base64(publicDevice.keyPackage)!==old.keyPackage)throw new AuthError('INVALID_PUBLIC_RECORD');
     }
     const prfInput=crypto.getRandomValues(new Uint8Array(32));
-    const credential=await createPasskey(options.options,prfInput);
+    const credential=await createPasskey(options.options,prfInput,this.abort.signal);
+    this.ensureOpen();
     let result=prfResult(credential);
-    if(!result && prfEnabled(credential))result=prfResult(await getPasskey({challenge:options.options.challenge,rpId:options.options.rp.id},credential.id,prfInput));
+    if(!result && prfEnabled(credential))result=prfResult(await getPasskey({challenge:options.options.challenge,rpId:options.options.rp.id},credential.id,prfInput,this.abort.signal));
+    this.ensureOpen();
     const secret:Credentials=result?{kind:'prf',result,credentialId:binary(credential.id),prfInput}:{kind:'passphrase',passphrase:passwordBytes(await this.askPassword('new',policy),policy)};
     publicDevice=await this.worker.call<PublicDevice>('seal',{credentials:secret});
     old={version:1,binding:publicDevice.binding,credentialId:credential.id,publicKey:base64(publicDevice.signaturePublicKey),keyPackage:base64(publicDevice.keyPackage),status:'pending'};
@@ -81,13 +94,14 @@ export class AuthFlow {
     return session;
   }
   async login() {
-    this.close();supported();
+    this.worker?.close();supported();this.ensureOpen();
     const {policy}=await api<{policy:Policy}>('policy');
     const record=descriptor(policy);if(!record)throw new AuthError('DEVICE_STATE_MISSING');
     const options=await api<Options<RequestOptions>>('login-options',{device_id:record.binding.deviceId});
     if(options.account_id!==record.binding.accountId)throw new AuthError('WRONG_DEVICE_BINDING');
     const method=await this.method(record,policy);
     const {credential,secret}=await this.credentials(record,policy,method,options.options);
+    this.ensureOpen();
     this.worker=new DeviceClient(policy);
     await this.worker.call<PublicDevice>('restore',{...workerConfig(record.binding,policy),credentials:secret});
     const proof=await this.worker.call<Uint8Array>('proof',{challenge:binary(options.options.challenge)});

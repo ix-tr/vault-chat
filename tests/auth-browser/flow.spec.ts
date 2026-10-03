@@ -98,3 +98,35 @@ test('failed activation can retry with the same identity and a fresh passkey',as
   const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('vault-chat-device-v1')!));
   expect(after.publicKey).toBe(before.publicKey);expect(after.keyPackage).toBe(before.keyPackage);expect(after.status).toBe('active');expect(after.credentialId).not.toBe(before.credentialId);
 });
+
+test('another activation tab cannot overwrite the original device descriptor',async({page,context})=>{
+  const link=await pending(page);await page.goto('/activate#activation='+link.token);
+  await page.getByRole('button',{name:'Create passkey and activate'}).click();
+  await expect(page.getByRole('heading',{name:'Choose a local password'})).toBeVisible();
+  const second=await context.newPage();await installAuthenticator(second);
+  await second.goto('/activate#activation='+link.token);
+  await second.getByRole('button',{name:'Create passkey and activate'}).click();
+  await expect(second.getByRole('status')).toContainText('already open in another tab');
+  expect(await second.evaluate(()=>localStorage.getItem('vault-chat-device-v1'))).toBeNull();
+  await password(page,localPassword,true);
+  await expect(page.getByRole('heading',{name:'Your device is unlocked'})).toBeVisible();
+  const record=await page.evaluate(()=>localStorage.getItem('vault-chat-device-v1'));
+  expect(await second.evaluate(()=>localStorage.getItem('vault-chat-device-v1'))).toBe(record);
+  await second.close();
+});
+
+test('leaving during activation lookup cannot start background key generation',async({page})=>{
+  const link=await pending(page);await page.goto('/activate#activation='+link.token);
+  const button=page.getByRole('button',{name:'Create passkey and activate'});await expect(button).toBeEnabled();
+  let release!:()=>void;
+  const gate=new Promise<void>(resolve=>{release=resolve;});
+  let started!:()=>void;const waiting=new Promise<void>(resolve=>{started=resolve;});
+  await page.route('**/api/auth/activation-info',async route=>{started();await gate;await route.continue();});
+  let enrollmentRequests=0;page.on('request',request=>{if(request.url().endsWith('/api/auth/enroll-options'))enrollmentRequests++;});
+  await button.click();await waiting;
+  await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true})));
+  release();await expect(button).toBeEnabled();
+  expect(enrollmentRequests).toBe(0);
+  expect(await page.evaluate(()=>localStorage.getItem('vault-chat-device-v1'))).toBeNull();
+  await expect(page.getByRole('heading',{name:'Your device is unlocked'})).toHaveCount(0);
+});

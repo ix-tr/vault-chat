@@ -23,13 +23,13 @@ export function serialize(credential:PublicKeyCredential,registration:boolean) {
   const r=credential.response as AuthenticatorAssertionResponse;
   return {...common,response:{clientDataJSON:base64(r.clientDataJSON),authenticatorData:base64(r.authenticatorData),signature:base64(r.signature),userHandle:r.userHandle?base64(r.userHandle):null}};
 }
-export async function createPasskey(options:CreationOptions,prfInput:Uint8Array<ArrayBuffer>) {
+export async function createPasskey(options:CreationOptions,prfInput:Uint8Array<ArrayBuffer>,signal?:AbortSignal) {
   const extensions:PrfInput={prf:{eval:{first:prfInput}}};
-  return checked(await navigator.credentials.create({publicKey:{...options,challenge:binary(options.challenge),user:{...options.user,id:binary(options.user.id)},excludeCredentials:options.excludeCredentials?.map(c=>({...c,id:binary(c.id)})),extensions},}));
+  return checked(await navigator.credentials.create({signal,publicKey:{...options,challenge:binary(options.challenge),user:{...options.user,id:binary(options.user.id)},excludeCredentials:options.excludeCredentials?.map(c=>({...c,id:binary(c.id)})),extensions},}));
 }
-export async function getPasskey(options:RequestOptions,credentialId:string,prfInput?:Uint8Array<ArrayBuffer>) {
+export async function getPasskey(options:RequestOptions,credentialId:string,prfInput?:Uint8Array<ArrayBuffer>,signal?:AbortSignal) {
   const extensions:PrfInput|undefined=prfInput?{prf:{eval:{first:prfInput}}}:undefined;
-  const result=checked(await navigator.credentials.get({publicKey:{...options,challenge:binary(options.challenge),allowCredentials:[{type:'public-key',id:binary(credentialId)}],userVerification:'required',extensions}}));
+  const result=checked(await navigator.credentials.get({signal,publicKey:{...options,challenge:binary(options.challenge),allowCredentials:[{type:'public-key',id:binary(credentialId)}],userVerification:'required',extensions}}));
   if(result.id!==credentialId)throw new Error('WRONG_PASSKEY');return result;
 }
 export function prfResult(credential:PublicKeyCredential) {

@@ -36,6 +36,7 @@ export const authText = {
   prfRequired:'This device requires its original passkey’s storage-unlock support. Try the original browser and passkey; a password cannot replace it.',
   badPassword:'The local password could not unlock your keys, or device storage is damaged. Try again without resetting your keys.',
   badStorage:'Encrypted device storage is unavailable or changed. Keep the existing data and try the original browser.',
+  enrollmentBusy:'Account activation is already open in another tab. Finish or cancel it there, then try again.',
   deviceExists:'This browser already has device keys. Sign in to that account; activation will not replace existing keys.',
   cancelled:'Passkey setup or sign-in was cancelled. You can try again.',
   network:'Reconnect to continue. Existing device keys have been kept.',rate:'Too many attempts. Wait before trying again.',

@@ -64,3 +64,5 @@ The owner resumed Phase 1. PR #12 remains the continuation branch. The latest pr
 Continue publishing/reviewing exact-head CI, apply/verify versioned hosted migration history, then bootstrap with explicit hosted-development settings and a private activation URL. The user must create their own passkey. Do not issue it before the deployment is usable because links expire. No physical authentication test or messaging/admin capability is claimed.
 
 Hosted update: all three source-versioned migrations were committed atomically to the previously empty hosted project. No accounts/keys were created. The repeat inspection verifies matching source history. Bootstrap remains pending until deployment is usable.
+
+The first full integration head `a1cc566496c6124d75daeedc9af14c1ba3552caa` passed all five CI jobs (including authentication and browser-mls). A follow-up adds cross-tab enrollment serialization and page-exit cancellation; validate the new exact head before merging.

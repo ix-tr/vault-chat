@@ -5,6 +5,7 @@
     "playwright.config.ts",
     "vitest.config.ts",
     "playwright.hosted.config.ts",
-    "playwright.crypto.config.ts"
+    "playwright.crypto.config.ts",
+    "playwright.auth.config.ts"
   ]
 }

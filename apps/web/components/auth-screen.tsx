@@ -12,6 +12,7 @@ function errorMessage(error:unknown,activation:boolean) {
   if(code==='DEVICE_STATE_MISSING')return authText.missingDevice;
   if(code==='PRF_REQUIRED' || code==='WRONG_PASSKEY')return authText.prfRequired;
   if(code==='UNLOCK_FAILED')return authText.badPassword;
+  if(code==='ENROLLMENT_IN_PROGRESS')return authText.enrollmentBusy;
   if(code==='DEVICE_ALREADY_EXISTS')return authText.deviceExists;
   if(code==='NETWORK_UNAVAILABLE')return authText.network;
   if(code==='RATE_LIMITED')return authText.rate;
