@@ -39,7 +39,7 @@ PR #10 merged on owner continuation. Next increment `feat/activation-transaction
 
 PR #11 merged after verify/secrets/database success at the exact recorded head. The continuation branch is now `feat/passkey-server` in the temporary clone. See [CHAT_AUTH.md](CHAT_AUTH.md): verified passkey/device proof server, transactional scoped sessions, operator bootstrap, rate limits and role/audit invariants. Management token and service-role JWT in the correct root `.env.local` were privately verified against the hosted project (healthy; project REST 200), without exposing values. No hosted migrations, accounts or UI auth are enabled. Keep working toward the owner's instruction to finish Phase 1: production encrypted-device Worker, client enrollment/login, build integration, full browser/backend flows, hosted setup and clear emulation limits. Do not report the phase complete based on server tests alone.
 
-## Pause checkpoint — 2026-10-03
+## Historical pause checkpoint — 2026-10-03
 
 The owner explicitly paused continuation after credential verification. [Draft PR #12](https://github.com/ix-tr/vault-chat/pull/12) preserves the passkey server work; implementation commit `caa7e882bc8d2bfd3f026f41b436e89072fda813`. At the pause check, secrets/database CI passed; verify/browser-mls were still running. Recheck the latest exact head on resumption; no all-green CI or merge is claimed. Leave this PR draft until its intended backend review and outstanding checks are resolved.
 
@@ -55,4 +55,12 @@ Resume with:
 4. Add complete browser-to-backend flows on Chromium/WebKit/Firefox/mobile profiles and document synthetic/emulated versus physical results. Integrate reproducible crypto assets into production builds without weakening admin CSP.
 5. After those gates pass, apply versioned hosted migrations, configure chat-server environment, run bootstrap with explicit settings and private link output, and verify hosted activation/login. Real user passkey enrollment requires the user's device interaction. Physical Android is still deferred; the owner's iPhone pass covered only shell/install/storage/offline behavior.
 
-Do not start Phase 1b or claim Phase 1 complete while these items remain. No further implementation or deployment should run during the requested pause.
+Do not start Phase 1b or claim Phase 1 complete while these items remain. The owner resumed with “okey devam”; the pause is revoked.
+
+## Active continuation — 2026-10-03
+
+The owner resumed Phase 1. PR #12 remains the continuation branch. The latest previously published head passed verify/secrets/database/browser-mls. New application Worker/UI, public policy endpoint, reproducible asset checks, license distribution and complete browser-to-backend tests are implemented. See DEVICE_ACTIVATION.md. Local check, full builds, dependency audit, ten auth scenarios and 84 crypto regressions pass; 44 browser auth cases pass on all five profiles. The owner reports entering the provided chat-only Netlify production environment manually; no Netlify access token is supplied or needed for that manual setup.
+
+Continue publishing/reviewing exact-head CI, apply/verify versioned hosted migration history, then bootstrap with explicit hosted-development settings and a private activation URL. The user must create their own passkey. Do not issue it before the deployment is usable because links expire. No physical authentication test or messaging/admin capability is claimed.
+
+Hosted update: all three source-versioned migrations were committed atomically to the previously empty hosted project. No accounts/keys were created. The repeat inspection verifies matching source history. Bootstrap remains pending until deployment is usable.

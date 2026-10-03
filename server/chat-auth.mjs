@@ -8,7 +8,7 @@ import { validateAuthPolicy } from './auth-policy.mjs';
 const flowCookie = '__Host-vault_flow';
 const chatCookie = '__Host-vault_chat';
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-const methods = new Map([['me', 'GET'], ['activation-info', 'POST'], ['enroll-options', 'POST'], ['enroll-finish', 'POST'], ['login-options', 'POST'], ['login-finish', 'POST'], ['logout', 'POST']]);
+const methods = new Map([['policy', 'GET'], ['me', 'GET'], ['activation-info', 'POST'], ['enroll-options', 'POST'], ['enroll-finish', 'POST'], ['login-options', 'POST'], ['login-finish', 'POST'], ['logout', 'POST']]);
 class Denied extends Error { constructor(status = 401) { super('AUTH_UNAVAILABLE'); this.status = status; } }
 const hex = bytes => Buffer.from(bytes).toString('hex');
 const digest = token => hex(hashActivationToken(token));
@@ -85,6 +85,7 @@ export async function handleChatAuth(request, action, deps) {
     let policy;
     try { policy = validateAuthPolicy(await rpc('settings')); } catch { throw new Denied(503); }
     await rate(rpc);
+    if (action === 'policy') return response({policy});
     if (action === 'me' || action === 'logout') {
       const token = cookie(request, chatCookie);
       const session = await rpc(action === 'me' ? 'session' : 'logout', { session_hash: digest(token), origin });

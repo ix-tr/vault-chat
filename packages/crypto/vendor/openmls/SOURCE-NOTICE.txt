@@ -1,0 +1,18 @@
+Vault Chat device-key Worker uses OpenMLS 0.9.0 with a replacement application
+binding. The MLS protocol implementation and dependency sources are unchanged.
+
+OpenMLS source (MIT):
+https://github.com/openmls/openmls/tree/3a3e35de3feeca8f6605143c464d5452ae584d43
+Replacement binding and reproducible build script:
+https://github.com/ix-tr/vault-chat/blob/feat/passkey-server/spikes/crypto/adapter/lib.rs
+https://github.com/ix-tr/vault-chat/blob/feat/passkey-server/scripts/build-crypto-spike.mjs
+
+LICENSE contains the OpenMLS license. licenses.json contains dependency license
+texts and source links for the exact WASM runtime/build dependency versions.
+The unchanged hpke-rs, hpke-rs-crypto and hpke-rs-rust-crypto sources are covered
+by MPL-2.0. Their exact source archives and MPL license text are linked in that
+inventory and are available under those terms. You may obtain and modify those
+sources under MPL-2.0; this distribution does not restrict those rights.
+
+provenance.json records the upstream revision, compiler image, binding, glue
+and WASM checksums. CI compares shipped bytes with a fresh source build.

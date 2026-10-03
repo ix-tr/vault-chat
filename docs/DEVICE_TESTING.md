@@ -1,5 +1,7 @@
 # Device testing
 
+Current continuation: see [DEVICE_ACTIVATION.md](DEVICE_ACTIVATION.md) for the application Worker, activation/login UI and complete browser test results. Earlier increment descriptions below are historical; hosted deployment and owner enrollment remain pending.
+
 ## Local certificate trust
 
 Run `mkcert -CAROOT` on the development computer. Transfer only `rootCA.pem` to devices; **never transfer `rootCA-key.pem`**. Generate a leaf certificate covering both chat/admin DNS names and the LAN IP. Both names must resolve from each phone.

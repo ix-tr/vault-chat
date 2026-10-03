@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - 'spikes/crypto/**'
+      - 'packages/crypto/**'
+      - 'scripts/build-auth-assets.mjs'
+      - 'scripts/verify-crypto-vendor.mjs'
       - 'scripts/build-crypto-spike.mjs'
       - 'scripts/build-unlock-spike.mjs'
       - 'tests/crypto/**'
@@ -14,6 +17,9 @@ on:
     branches: [main]
     paths:
       - 'spikes/crypto/**'
+      - 'packages/crypto/**'
+      - 'scripts/build-auth-assets.mjs'
+      - 'scripts/verify-crypto-vendor.mjs'
       - 'scripts/build-crypto-spike.mjs'
       - 'scripts/build-unlock-spike.mjs'
       - 'tests/crypto/**'
@@ -37,6 +43,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:crypto-spike
       - run: pnpm build:crypto-spike --adapter
+      - run: node scripts/verify-crypto-vendor.mjs
       - run: pnpm build:unlock-spike
       - run: pnpm exec playwright install --with-deps chromium webkit firefox
       - run: pnpm test:crypto-spike --workers=3

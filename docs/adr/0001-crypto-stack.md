@@ -1,5 +1,7 @@
 # ADR 0001 — MLS with OpenMLS for browser messaging
 
+Current continuation: see [DEVICE_ACTIVATION.md](../DEVICE_ACTIVATION.md) for the application Worker, activation/login UI and complete browser test results. Earlier increment descriptions below are historical; hosted deployment and owner enrollment remain pending.
+
 Date: 2026-10-03. Status: select OpenMLS as the protocol-core direction for development; production adapter approval is pending. The experiment is not the application encryption layer.
 
 ## Context and decision

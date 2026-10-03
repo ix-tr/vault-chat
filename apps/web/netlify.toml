@@ -1,7 +1,7 @@
 # Netlify UI: package directory apps/web; leave base directory unset.
 # Installation/build commands run from the repository root.
 [build]
-command = "pnpm check && pnpm --filter @vault/web build"
+command = "pnpm check && pnpm build:auth-assets && pnpm --filter @vault/web build"
 publish = "apps/web/.next"
 
 [build.environment]

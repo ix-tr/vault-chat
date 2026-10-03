@@ -8,7 +8,7 @@
     "dev:stop": "node scripts/local.mjs stop",
     "dev:reset": "node scripts/local.mjs reset",
     "certs": "node scripts/local.mjs certs",
-    "build": "pnpm -r build",
+    "build": "pnpm build:auth-assets && pnpm -r build",
     "lint": "eslint .",
     "typecheck": "pnpm -r typecheck && tsc -p tsconfig.tooling.json",
     "test": "vitest run",
@@ -24,7 +24,9 @@
     "build:unlock-spike": "node scripts/build-unlock-spike.mjs",
     "test:db": "node scripts/test-db.mjs",
     "test:auth": "node --test tests/auth/chat-auth.test.mjs",
-    "auth:bootstrap": "node scripts/auth-bootstrap.mjs"
+    "auth:bootstrap": "node scripts/auth-bootstrap.mjs",
+    "build:auth-assets": "node scripts/build-auth-assets.mjs",
+    "test:auth-browser": "playwright test --config playwright.auth.config.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

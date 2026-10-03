@@ -1,5 +1,7 @@
 # Chat authentication server boundary
 
+Current continuation: see [DEVICE_ACTIVATION.md](DEVICE_ACTIVATION.md) for the application Worker, activation/login UI and complete browser test results. Earlier increment descriptions below are historical; hosted deployment and owner enrollment remain pending.
+
 Updated 2026-10-03. This is a tested backend increment; Phase 1 remains incomplete. Routes require explicit `VAULT_AUTH_ENABLED=true`, a configured HTTPS `VAULT_CHAT_ORIGIN`, project URL and server API key. They return 503 while disabled. The chat activation/login UI and production encrypted-device Worker are not connected, hosted migrations are not applied, and no real account has been issued. Never enable this increment on its own.
 
 The Next chat server exposes `/api/auth/activation-info`, `enroll-options`, `enroll-finish`, `login-options`, `login-finish`, `me` and `logout`. Only activation links issued by a trusted operator can enroll; there is no public sign-up, bootstrap or account creation HTTP endpoint. Every POST requires the configured exact origin; cross-origin Fetch Metadata is refused, including another same-site subdomain. No permissive CORS is sent. Credentials are verified with SimpleWebAuthn 14 against the stored random challenge, exact origin and hostname RP ID, with user presence/verification required. [The library documentation](https://simplewebauthn.dev/docs/packages/server) describes registration and assertion verification.

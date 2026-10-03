@@ -1,5 +1,7 @@
 # Phase 1 — account/device database foundation
 
+Current continuation: see [DEVICE_ACTIVATION.md](DEVICE_ACTIVATION.md) for the application Worker, activation/login UI and complete browser test results. Earlier increment descriptions below are historical; hosted deployment and owner enrollment remain pending.
+
 Updated: 2026-10-03. This is the first database increment, not completed Phase 1 or production activation. The isolated crypto adapter still has review and real-authenticator/device integration gates. Schema development proceeds separately without issuing real accounts, sessions or keys.
 
 ## Implemented
