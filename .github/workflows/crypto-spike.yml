@@ -4,6 +4,7 @@ on:
     paths:
       - 'spikes/crypto/**'
       - 'scripts/build-crypto-spike.mjs'
+      - 'scripts/build-unlock-spike.mjs'
       - 'tests/crypto/**'
       - 'playwright.crypto.config.ts'
       - '.github/workflows/crypto-spike.yml'
@@ -14,6 +15,7 @@ on:
     paths:
       - 'spikes/crypto/**'
       - 'scripts/build-crypto-spike.mjs'
+      - 'scripts/build-unlock-spike.mjs'
       - 'tests/crypto/**'
       - 'playwright.crypto.config.ts'
       - '.github/workflows/crypto-spike.yml'
@@ -35,5 +37,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:crypto-spike
       - run: pnpm build:crypto-spike --adapter
+      - run: pnpm build:unlock-spike
       - run: pnpm exec playwright install --with-deps chromium webkit firefox
       - run: pnpm test:crypto-spike --workers=3

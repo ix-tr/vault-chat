@@ -6,7 +6,7 @@ Updated: 2026-10-03. The owner wants the agent to execute commands. Phase 0 foun
 
 - Public GitHub repository: https://github.com/ix-tr/vault-chat. Main is protected: PRs, up-to-date verify/secrets checks, linear history, resolved conversations; admins included; force pushes/deletion disabled.
 - PR #5 merged on owner instruction, squash commit `29f855fdebb178f52a4207bbb4a7f712be01fc39`. [Merged-main CI](https://github.com/ix-tr/vault-chat/actions/runs/37112662708) passed verify/secrets, including build/browser tests/audit.
-- The workspace `.git` is unusable/read-only. A normal clone at `/tmp/vault-sync-01f3_aqp/repo` is used for branches/PRs. Its current continuation branch is `feat/crypto-state-boundary`. Do not overwrite unrelated remote changes.
+- The workspace `.git` is unusable/read-only. A normal clone at `/tmp/vault-sync-01f3_aqp/repo` is used for branches/PRs. Its current continuation branch is `feat/device-unlock`. Do not overwrite unrelated remote changes.
 - Local GitHub credentials and Supabase settings are ignored; never disclose or publish them. Compiler/browser stages contain only the files/dependencies needed for tests.
 
 ## Verified foundation
@@ -26,3 +26,5 @@ Binding/storage continuation: a narrow OpenMLS binding and encrypted atomic Inde
 Generated spike artifacts are ignored. Rebuild with `pnpm build:crypto-spike` and `pnpm build:crypto-spike --adapter`, then run `pnpm test:crypto-spike`. The builder currently requires Linux x86-64, Docker, Node 24, Git and tar. Crypto spike CI repeats this separately from normal shell CI. Physical iOS/Android testing remains required when devices are available.
 
 PR #6 merged on owner continuation, squash commit `737927232081159fb6bde9fcb85168e28e4dc6da`. Merged-main verify/secrets and original browser-mls CI passed: https://github.com/ix-tr/vault-chat/actions/runs/37114027504 and https://github.com/ix-tr/vault-chat/actions/runs/37114027508. The binding/storage continuation is a separate branch; new publication/check results are reported with its PR. No exact Netlify deploy SHA is claimed.
+
+PR #7 merged on owner continuation, squash commit `2d46529b7afd8edf8240640b92bc44aefac569cd`. The subsequent credential-unlock experiment passes 75 combined browser tests and local check/audit. Read [DEVICE_UNLOCK.md](DEVICE_UNLOCK.md): Argon2id page reload is real MLS; PRF wrapping uses synthetic data and WebAuthn helper assertions are mocked. No backend authentication or production adapter is enabled. Build the additional bundle with `pnpm build:unlock-spike`. Next gates: real authenticator testing, server assertion verification, authenticated public member directory integration and independent boundary review before real account activation.
