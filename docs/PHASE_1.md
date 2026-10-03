@@ -25,3 +25,5 @@ Local `pnpm test:db` and `pnpm check` pass. CI includes a separate `database` jo
 ## Next increment
 
 Design server-verified passkey registration/assertion, single-use expiring activation challenges, authenticated account-subject binding and scoped session issuance. Add replay, expiry, failed verification and race tests before connecting the UI. Implement admin role invariants and bootstrap with separate admin step-up in their own guarded increment. Hosted migration and real account activation wait for those complete boundaries.
+
+Activation continuation: server-only token creation and transactional issuance/completion now exist, with expiry, reissue revocation, replay rejection, atomic device/account commit and three two-connection race tests. See [ACTIVATION.md](ACTIVATION.md). This supersedes the earlier absence of activation SQL primitives; no public activation endpoint or verified authentication enrollment is enabled.
