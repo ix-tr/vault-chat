@@ -41,3 +41,7 @@ Use a simple, mobile-first design with light and dark themes.
 ## Security priority
 
 Security takes precedence over convenience. When choosing between alternatives, choose the secure option and document the reason.
+
+## Hosted site record
+
+Chat origin: https://vcht.netlify.app (owner reported successful deployment). Admin origin: https://comfy-croquembouche-2be7d5.netlify.app (owner provided URL after reporting the expected admin preview). Do not configure a shared origin or register production passkeys before stable origins and authentication are ready.

@@ -69,3 +69,5 @@ Development UIs use ports 3100/3101. Automated browser tests use dedicated ports
 Two Netlify sites are configured by `apps/web/netlify.toml` and `apps/admin/netlify.toml`. Set each site's Package directory to its app folder and leave Base directory unset; detailed account setup and hosted tests are in [deployment](docs/DEPLOYMENT.md).
 
 For initial GitHub publication from the owner's terminal, run `python3 scripts/publish_github.py`. It creates a private `ix-tr/vault-chat` repository and uploads the foundation after scanning staged files. Credentials in `.token` and `supabasesettings` stay local. See deployment instructions before running.
+
+For hosted chat/admin HTTP security checks and chat PWA assets, run `node scripts/verify-hosted.mjs` from the repository root. It defaults to both recorded Netlify origins and writes a secret-free ignored report. Override them with `CHAT_TEST_ORIGIN` and `ADMIN_TEST_ORIGIN` when needed; browser/device checks remain separate.
