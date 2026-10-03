@@ -34,5 +34,6 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:crypto-spike
+      - run: pnpm build:crypto-spike --adapter
       - run: pnpm exec playwright install --with-deps chromium webkit firefox
       - run: pnpm test:crypto-spike --workers=3

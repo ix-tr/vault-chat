@@ -60,3 +60,5 @@ Physical iOS Safari, Home Screen PWA and Android Chrome **have not run this cryp
 6. Add the narrow WASM CSP permission only when the actual app adapter requires it, keeping separate admin policy/storage. Test physical iPhone Safari/PWA and Android Chrome/PWA, cold load, persistence and interrupted operations.
 
 The next code task is the reviewed OpenMLS application boundary and persistence experiment. Phase 1 authentication/key registration depends on that boundary. If it cannot satisfy these requirements using the audited core APIs, stop and ask the owner rather than substitute an unaudited protocol.
+
+Continuation, 2026-10-03: the application binding and encrypted state/outbox experiment now exist outside the production package, with 50 combined browser cases passing. [CRYPTO_STATE.md](../CRYPTO_STATE.md) records the implementation, partial rollback guard, strict-transaction limitations and remaining identity/unlock/review gates. This progress does not expand the independent audit scope or approve production messaging.
