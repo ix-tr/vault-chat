@@ -33,3 +33,5 @@ Chat site only: `VAULT_AUTH_ENABLED=true`, `VAULT_CHAT_ORIGIN=https://vcht.netli
 The explicit starter policy is `infra/hosted-development-auth-policy.json`: 100 accounts, five devices/passkeys per account, one-hour activation links, five-minute challenges, 24-hour chat sessions with one-hour idle expiry, global 120/account 20 requests per minute, Argon2id creation at 64 MiB and three operations. This is an editable hosted-development policy, not a measured 10k-user capacity or messaging policy.
 
 Follow-up: Web Locks serialize activation across tabs; unsupported locking fails closed. An AbortController cancels native WebAuthn on lock/page exit, and a closed flow cannot generate keys after a delayed activation lookup. Five-profile tests exercise competing activation tabs and page exit during lookup.
+
+Hosted verification found that Netlify serves public crypto files directly without Next response headers. Chat `netlify.toml` now sets the isolated Worker policy explicitly for `/crypto-assets/*`; `pnpm verify:hosted` checks live Worker headers, WASM bytes, provenance and license distribution as well as page CSP. Do not bootstrap until that hosted check passes.

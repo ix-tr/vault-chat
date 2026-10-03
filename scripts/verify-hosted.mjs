@@ -1,4 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertSeparateOrigins, product, text } from '../packages/shared/src/index.ts';
@@ -119,6 +120,22 @@ async function main() {
   await check('Same-origin service worker asset', async () => {
     const response = await get('/sw.js');
     if (!/javascript/.test(response.headers.get('content-type') ?? '')) throw new Error('Service worker has an invalid MIME type.');
+  });
+  await check('Device Worker assets and isolation', async () => {
+    const provenance = await (await get('/crypto-assets/provenance.json')).json();
+    const expected = JSON.parse(readFileSync(new URL('../packages/crypto/vendor/openmls/provenance.json', import.meta.url), 'utf8'));
+    if (JSON.stringify(provenance) !== JSON.stringify(expected)) throw new Error('Crypto provenance differs from the reviewed artifact.');
+    for (const path of ['/crypto-assets/device-worker.js', '/crypto-assets/openmls_wasm_bg.wasm']) {
+      const response = await get(path);
+      if (!response.headers.get('content-security-policy')?.includes("'wasm-unsafe-eval'") || response.headers.get('cross-origin-embedder-policy') !== 'require-corp' || response.headers.get('cross-origin-resource-policy') !== 'same-origin' || !response.headers.get('cache-control')?.includes('no-store') || response.headers.get('x-content-type-options') !== 'nosniff') throw new Error('Worker assets lack their required isolated response policy.');
+      if (path.endsWith('.wasm') && createHash('sha256').update(new Uint8Array(await response.arrayBuffer())).digest('hex') !== expected.sha256) throw new Error('Served WASM checksum mismatch.');
+    }
+    const licenses = await (await get('/crypto-assets/licenses.json')).json();
+    if (!Array.isArray(licenses) || !licenses.length || licenses.some(item => !item.notices?.length)) throw new Error('Dependency notices are missing.');
+    await get('/crypto-assets/SOURCE-NOTICE.txt');
+    const response = await get('/signin');
+    const result = assessPage(response.headers, await response.text());
+    if (result.errors.length || response.headers.get('content-security-policy')?.includes('wasm-unsafe-eval')) throw new Error('Sign-in page isolation differs from the main page.');
   });
   mkdirSync('test-results', { recursive: true });
   writeFileSync('test-results/hosted-http-report.json', JSON.stringify({
