@@ -1,6 +1,6 @@
 # Security status
 
-This foundation is not ready for real-user data. Authentication, authorization, RLS, passkey separation, encryption, audit chain and abuse limits are not implemented. Report security issues privately to the repository owner until a reporting address is selected.
+This foundation is not ready for real-user data. Production authentication, authorization, passkey session separation, encryption, audit chain and abuse limits remain incomplete. Account/device database grants and RLS are implemented and tested in isolation; no hosted migration or real account activation is enabled. See [Phase 1 scope](PHASE_1.md). Report security issues privately to the repository owner until a reporting address is selected.
 
 Never commit private certificates, environment secrets or service-role keys. Local secrets are generated into ignored files with restrictive modes. Production must use managed secret storage, restricted cookies, verified token audiences and app settings, not development credentials. Pre-commit gitleaks and CI dependency checks are configured but not yet executed.
 
