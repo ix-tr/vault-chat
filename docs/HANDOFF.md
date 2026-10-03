@@ -1,50 +1,26 @@
 # Vault Chat — handoff
 
-Updated: 2026-10-03. Work resumed; Phase 0 remains open. The owner wants the agent to run commands directly.
+Updated: 2026-10-03. The owner wants the agent to execute commands. Phase 0 foundation verification is complete; Phase 0.5 has a working isolated OpenMLS browser experiment and a recorded protocol-core direction. Production crypto integration remains pending.
 
-## Verified state
+## Current repository
 
-- Chat: https://vcht.netlify.app
-- Admin: https://comfy-croquembouche-2be7d5.netlify.app
-- Network access was enabled after resuming the CLI. All six independent HTTP checks now pass: two chat HTML/CSP responses, two admin closed-preview/CSP responses, manifest/icons and service-worker asset. The owner made the admin preview public; HTTP 401 no longer blocks checks.
-- Local `pnpm check` passes, including nine infrastructure cases and Vitest.
-- Full local browser matrix in the official Playwright 1.63.0 Noble Docker image: 42 passed, 3 skipped. Chromium, WebKit, Firefox, Android emulation and iOS emulation are covered.
-- Live chat browser matrix in the same container: 37 passed, 3 skipped. The earlier chat command excluded admin. After the owner made admin public, all five live admin profile tests passed separately (Chromium, WebKit, Firefox, Android emulation, iOS emulation).
-- Skips affect only browser offline emulation outside Chromium. Actual unavailable-network service-worker fallback tests passed on every profile through a loopback proxy. The proxy test explicitly registers the deployed worker; direct-origin tests separately verify hydration, layout, themes, keyboard navigation and simulated storage denial.
-- Owner verified real iPhone Safari and Home Screen installation with a well-fitting layout, and reported persistent storage granted. Physical Android, radio-off, keyboard/safe-area edge cases and storage eviction remain unconfirmed. See DEVICE_TESTING.md for the distinction.
-- GitHub Actions API confirms Checks #10 concluded failure, specifically at `pnpm test:e2e`. Installation, `pnpm check`, build and secret scan passed. Audit was skipped after the test failure. Run: https://github.com/ix-tr/vault-chat/actions/runs/37069887261 (commit `033a9607f6e40892b90f4556eca2f378541a4650`). New local fixes have not been published or verified in CI.
+- Public GitHub repository: https://github.com/ix-tr/vault-chat. Main is protected: PRs, up-to-date verify/secrets checks, linear history, resolved conversations; admins included; force pushes/deletion disabled.
+- PR #5 merged on owner instruction, squash commit `29f855fdebb178f52a4207bbb4a7f712be01fc39`. [Merged-main CI](https://github.com/ix-tr/vault-chat/actions/runs/37112662708) passed verify/secrets, including build/browser tests/audit.
+- The workspace `.git` is unusable/read-only. A normal clone at `/tmp/vault-sync-01f3_aqp/repo` is used for branches/PRs. Its current continuation branch is `spike/browser-mls`. Do not overwrite unrelated remote changes.
+- Local GitHub credentials and Supabase settings are ignored; never disclose or publish them. Compiler/browser stages contain only the files/dependencies needed for tests.
 
-## Changes made
+## Verified foundation
 
-The HTTP verifier now assesses both separate origins, strict admin styles, fresh response nonces and the closed preview. Tests reject unsafe/shared origin overrides and permissive admin style policies.
+Separate chat https://vcht.netlify.app and admin https://comfy-croquembouche-2be7d5.netlify.app both pass current independent HTTP security checks. Closed admin preview is publicly reachable but has no operational actions/authentication. Six HTTP checks passed again after merging; exact Netlify deployment SHA was not verified.
 
-The admin browser test now checks controls inside the application main region so Next.js development tools do not masquerade as admin actions. New tests cover denied persistent storage, keyboard access and real network failure for the service worker. No CSP was weakened. The owner subsequently changed Netlify visitor visibility to public for the closed admin foundation preview; application admin authentication remains unimplemented.
+Local browser matrix: 42 pass/3 skip. Live chat: 37 pass/3 skip; five live admin profile tests pass separately. Actual proxy-cut network/SW fallback passes all five profiles. Owner verified real iPhone Safari/Home Screen layout and storage granted. Physical Android is deferred. See PHASE_0.md and DEVICE_TESTING.md for emulation limits. `pnpm check` and JavaScript dependency audit pass; Vitest is patched to 4.1.11.
 
-## Resume here
+## Crypto continuation
 
-1. Live admin foundation verification is complete: six overall HTTP checks and five admin browser tests passed after the owner made the preview public. There is no implemented application admin login yet; no operational admin actions are exposed.
-2. Publish the prepared local changes through the owner's authorized repository workflow and obtain a successful new CI run, including the dependency audit. The workspace has no usable Git metadata; do not claim a commit or push occurred.
-3. Record real-device checks when available; emulation is already recorded separately.
-4. Complete Phase 0 gates before the audited browser-crypto spike and ADR. No crypto protocol is selected; custom protocols are prohibited.
+Read [ADR 0001](adr/0001-crypto-stack.md) and [spike instructions](../spikes/crypto/README.md). OpenMLS 0.9.0's unmodified official WASM experiment compiles reproducibly and passes 15 tests in Chromium/WebKit/Firefox and iOS/Android emulation. It covers two/three-member traffic in separate Workers, replay/tamper rejection and known malformed-input/CSP failures. No physical device has tested this crypto experiment.
 
-## Operational notes
+OpenMLS is the selected protocol-core direction for MLS one-to-one and group messaging. The independent audit covers core components, not providers/storage/WASM bindings or the app. The upstream wrapper is experimental, traps on malformed input and lacks removal/self-update/persistence APIs. It is not approved as the production adapter. `@vault/crypto` remains inactive; no real user keys/messages are generated. libsignal's unchanged WASM check failed at getrandom backend selection; ts-mls lacks the required audit.
 
-Docker tests used a temporary source copy omitting credentials, with read-only dependency mounts. No system package install was needed. The recorded browser image digest is in DEVICE_TESTING.md. Hosted HTTP results are in ignored `test-results/hosted-http-report.json`; Docker browser outputs are under the temporary source directory. Local GitHub credentials and Supabase settings must never be disclosed or published.
+Next: build/review a narrow binding around existing OpenMLS APIs and an encrypted, atomic persistence experiment, covering bounded input, typed errors, removal/update, verified device credentials and crash/reload behavior. Resolve the ADR gates before connecting real account/key registration. Do not implement a custom protocol or silently substitute an unaudited one. If the audited core cannot satisfy the required browser path, ask the owner.
 
-Dependency follow-up: upgraded the development test runner from Vitest 3.2.7 to the patched 4.1.11 and updated pnpm-lock.yaml for GHSA-82fw-gwwq-j7x9 (https://github.com/vitest-dev/vitest/security/advisories/GHSA-82fw-gwwq-j7x9). After installation, `pnpm audit` reports no known vulnerabilities. The package cache required sandbox escalation; installation succeeded after approval. Browser tests use Playwright and were completed before this test-runner-only update.
-
-Owner mobile report, 2026-10-03: the owner reports that mobile testing passed. Device/browser identities and whether installed-PWA, offline revisit, storage, keyboard and safe-area scenarios were tested are awaiting clarification. Record this as owner-reported mobile success, without marking all physical iOS/Android checklist items complete.
-
-Physical iPhone clarification, 2026-10-03: the owner verified Safari and the installed Home Screen app, reported a well-fitting layout in both, and saw persistent storage granted. This supersedes the earlier unspecified mobile report. No physical Android, offline, push or keyboard-edge-case pass is inferred.
-
-## Repository publication — 2026-10-03
-
-Prepared a normal clone at `/tmp/vault-sync-01f3_aqp/repo` because the workspace `.git` is empty/read-only. Compared tracked source with remote main and preserved unrelated remote files. Staged diff checks and redacted gitleaks scan passed. Commit `c07316f3359bf5d0374c1e914903f69e6e33c40c` was pushed normally to `fix/phase-zero-verification`; draft PR: https://github.com/ix-tr/vault-chat/pull/5. Main was not merged or force-pushed. New CI runs #11 and #12 were in progress at publication. Earlier unpublished notes describe the prior state.
-
-GitHub confirms `main` is unprotected. The protection and ruleset endpoints return HTTP 403 with “Upgrade to GitHub Pro or make this repository public to enable this feature.” Account plan is Free and the repository is private. No plan purchase, visibility change or protection bypass was performed. Preserve private visibility; until an eligible plan is chosen, reviewing PRs and checking CI is a process convention, not a GitHub-enforced branch rule. Official availability: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches.
-
-## Current repository status — supersedes private/unpublished notes
-
-The owner authorized public visibility to enable branch protection on GitHub Free. Repository is now public. History scan passed (seven commits at scan time), with no leaks detected. Main requires PRs, strict/up-to-date `verify` and `secrets` GitHub Actions checks, linear history and resolved conversations. Rules include admins; force pushes and deletion are disabled. No purchase or history rewrite occurred.
-
-PR #5 contains commit `c07316f` and follow-up `6eee058`. Push CI #11 passed for c07316f. Its PR CI #12 failed because Gitleaks could not read PR metadata (`Resource not accessible by integration`), not because the local scan found a secret. The follow-up gives only the secrets job `pull-requests: read` and disables PR comments, retaining read-only tokens. New CI for this fix was still running when this update was prepared. Repository-visibility documentation is included in the same PR. Main has not been merged; do not claim the default branch was updated.
+Generated spike artifacts are ignored. Rebuild with `pnpm build:crypto-spike`, then run `pnpm test:crypto-spike`. The builder currently requires Linux x86-64, Docker, Node 24, Git and tar. Crypto spike CI repeats this separately from normal shell CI. Physical iOS/Android testing remains required when devices are available.

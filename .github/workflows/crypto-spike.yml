@@ -1,0 +1,38 @@
+name: Crypto spike
+on:
+  pull_request:
+    paths:
+      - 'spikes/crypto/**'
+      - 'scripts/build-crypto-spike.mjs'
+      - 'tests/crypto/**'
+      - 'playwright.crypto.config.ts'
+      - '.github/workflows/crypto-spike.yml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  push:
+    branches: [main]
+    paths:
+      - 'spikes/crypto/**'
+      - 'scripts/build-crypto-spike.mjs'
+      - 'tests/crypto/**'
+      - 'playwright.crypto.config.ts'
+      - '.github/workflows/crypto-spike.yml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+permissions:
+  contents: read
+jobs:
+  browser-mls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:crypto-spike
+      - run: pnpm exec playwright install --with-deps chromium webkit firefox
+      - run: pnpm test:crypto-spike --workers=3
