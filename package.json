@@ -36,7 +36,7 @@
     "libsodium-wrappers-sumo": "0.8.4",
     "supabase": "^2.65.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.48.0",
+    "typescript-eslint": "^8.71.1",
     "vitest": "^4.1.11"
   },
   "dependencies": {
